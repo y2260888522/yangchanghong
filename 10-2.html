@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10-2 CSS Animation 幻灯片</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .slideshow-container {
+            width: 800px;
+            max-width: 90%;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .slideshow {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            animation: slideAnimation 12s infinite;
+        }
+
+        .slide:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .slide:nth-child(2) {
+            animation-delay: 4s;
+        }
+
+        .slide:nth-child(3) {
+            animation-delay: 8s;
+        }
+
+        @keyframes slideAnimation {
+            0%, 25% {
+                opacity: 1;
+                transform: translateX(0);
+                z-index: 1;
+            }
+            33.33%, 91.67% {
+                opacity: 0;
+                transform: translateX(-100%);
+                z-index: 0;
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(0);
+                z-index: 0;
+            }
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 30px;
+        }
+
+        .slide-image {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 15px;
+            background: #f5f5f5;
+        }
+
+        .slide-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            animation: imageZoom 12s infinite;
+            border-radius: 15px;
+        }
+
+        @keyframes imageZoom {
+            0%, 25% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            75%, 100% {
+                transform: scale(1);
+            }
+        }
+
+        .slide-text {
+            text-align: center;
+            padding: 25px 20px 15px;
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.95));
+        }
+
+        .slide-text h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 8px;
+            animation: textFadeIn 12s infinite;
+        }
+
+        .slide-text p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        @keyframes textFadeIn {
+            0%, 5% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            10%, 25% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            30%, 100% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .indicators {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .slide:nth-child(1) ~ .indicators .indicator:nth-child(1),
+        .slide:nth-child(2) ~ .indicators .indicator:nth-child(2),
+        .slide:nth-child(3) ~ .indicators .indicator:nth-child(3) {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .author-info {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .author-info h3 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .author-info p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <div class="slideshow">
+            <div class="slide">
+                <div class="slide-content">
+                    <div class="slide-image">
+                        <img src="./1 (11).jpg" alt="幻灯片1">
+                    </div>
+                    <div class="slide-text">
+                        <h2>精彩瞬间一</h2>
+                        <p>这是第一张幻灯片的描述文字</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="slide-content">
+                    <div class="slide-image">
+                        <img src="./1 (10).jpg" alt="幻灯片2">
+                    </div>
+                    <div class="slide-text">
+                        <h2>精彩瞬间二</h2>
+                        <p>这是第二张幻灯片的描述文字</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="slide-content">
+                    <div class="slide-image">
+                        <img src="./1 (9).jpg" alt="幻灯片3">
+                    </div>
+                    <div class="slide-text">
+                        <h2>精彩瞬间三</h2>
+                        <p>这是第三张幻灯片的描述文字</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="indicators">
+                <div class="indicator"></div>
+                <div class="indicator"></div>
+                <div class="indicator"></div>
+            </div>
+        </div>
+
+        <div class="author-info">
+            <h3>杨长鉷</h3>
+            <p>CSS Animation 幻灯片展示</p>
+        </div>
+    </div>
+</body>
+</html>

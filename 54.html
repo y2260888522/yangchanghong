@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>下导航 - 字体图标方案</title>
+  <!-- 1. 引入 iconfont 提供的样式 -->
+  <link rel="stylesheet" href="iconfont/iconfont.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f5f6f8;
+      /* 给固定导航留出底部空间 */
+      padding-bottom: calc(60px + env(safe-area-inset-bottom));
+    }
+
+    /* ===== 下导航容器 ===== */
+    .tabbar {
+      position: fixed;       /* 固定效果：不随页面滚动 */
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+      display: flex;         /* 自适应宽度的核心：flex 等分 */
+      width: 100%;
+      max-width: 750px;      /* 大屏时不至于把图标拉得太散，可按需删掉 */
+      margin: 0 auto;
+      background: #fff;
+      border-top: 1px solid #e6e6e6;
+      /* 适配 iPhone 底部安全区 */
+      padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    /* ===== 每个导航项 ===== */
+    .tabbar__item {
+      flex: 1 1 0;           /* 关键：等分剩余空间，宽度自适应 */
+      min-width: 0;          /* 防止文字撑破，允许收缩 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 6px 0 4px;
+      color: #8a8f99;
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    /* ===== 字体图标本体 ===== */
+    .tabbar__icon {
+      font-size: 22px;       /* 改变字体大小 —— 考核点 */
+      color: #8a8f99;        /* 改变颜色 —— 考核点 */
+      line-height: 1;
+      transition: color .2s, transform .2s;
+    }
+
+    .tabbar__text {
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    /* 选中/悬停状态 */
+    .tabbar__item.is-active,
+    .tabbar__item:hover {
+      color: #ff5a3c;
+    }
+    .tabbar__item.is-active .tabbar__icon,
+    .tabbar__item:hover .tabbar__icon {
+      color: #ff5a3c;
+    }
+    .tabbar__item:active .tabbar__icon {
+      transform: scale(0.9);
+    }
+
+    /* 中间凸起按钮（可选，视觉丰富度） */
+    .tabbar__item--center .tabbar__icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff7a45, #ff5a3c);
+      color: #fff;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(255, 90, 60, .35);
+      margin-top: -18px;
+    }
+
+    /* ===== 页面内容占位，用于演示滚动 ===== */
+    .page {
+      padding: 16px;
+      min-height: 150vh;     /* 故意拉长，方便验证“固定”效果 */
+    }
+    .page h1 { font-size: 18px; margin-bottom: 8px; }
+    .page p  { font-size: 14px; color: #666; line-height: 1.8; }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+    <h1>字体图标下导航演示</h1>
+    <p>向下滚动页面，底部导航始终保持固定。拖动浏览器改变窗口宽度，导航项等分自适应。</p>
+  </div>
+
+  <!-- ===== 下导航 ===== -->
+  <nav class="tabbar">
+    <a href="#" class="tabbar__item is-active">
+      <i class="iconfont icon-home tabbar__icon"></i>
+      <span class="tabbar__text">首页</span>
+    </a>
+
+    <a href="#" class="tabbar__item">
+      <i class="iconfont icon-category tabbar__icon"></i>
+      <span class="tabbar__text">分类</span>
+    </a>
+
+    <a href="#" class="tabbar__item tabbar__item--center">
+      <i class="iconfont icon-add tabbar__icon"></i>
+      <span class="tabbar__text">发布</span>
+    </a>
+
+    <a href="#" class="tabbar__item">
+      <i class="iconfont icon-cart tabbar__icon"></i>
+      <span class="tabbar__text">购物车</span>
+    </a>
+
+    <a href="#" class="tabbar__item">
+      <i class="iconfont icon-user tabbar__icon"></i>
+      <span class="tabbar__text">我的</span>
+    </a>
+  </nav>
+
+</body>
+</html>

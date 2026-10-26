@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ych的flex</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .flex {
+            display: flex;           /* 关键：开启 flex 布局 */
+            flex-wrap: wrap;         /* 宽度 40% 的项放不下时换行，每行 2 个 */
+            justify-content: space-around;
+            gap: 10px;               /* 项间距 */
+        }
+        .flex li {
+            width: 40%;
+            height: 300px;
+            background: #eee;        /* 加个背景色方便看到效果 */
+            list-style: none;        /* 去掉默认圆点 */
+            display: flex;
+        }
+        .box{
+            width: 100px;
+            height: 100px;
+            background-color: aqua;
+        }
+        .flex li:nth-child(1){
+            align-items: center;
+            justify-content: center;
+        }
+
+
+
+        .ych{
+            width: 400px;
+            height: 300px;
+            background-color: aquamarine;
+        }
+        .flex li:nth-child(2){
+            align-items:center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <h2>ych的flex</h2>
+    <ul class="flex">                <!-- 原为 <u1>，已改为 <ul> -->
+        <li>
+            <div class="box"></div>
+        </li>
+        <li>
+            <div class="ych"></div>
+        </li>
+        <li></li>
+        <li></li>
+    </ul>
+</body>
+</html>

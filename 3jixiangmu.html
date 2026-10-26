@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人作品集 | 高级网页设计三级项目</title>
+    <style>
+        /* 全局样式重置与基础设置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+
+        :root {
+            --main-color: #2563eb;
+            --light-color: #f0f7ff;
+            --dark-color: #1e293b;
+            --gray-color: #64748b;
+            --transition: all 0.3s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: "";
+            width: 80px;
+            height: 4px;
+            background: var(--main-color);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -10px;
+            border-radius: 2px;
+        }
+
+        /* 导航栏 - 高级sticky定位+滚动变色 */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 999;
+            transition: var(--transition);
+            padding: 1rem 0;
+        }
+
+        header.active {
+            background: #fff;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            padding: 0.8rem 0;
+        }
+
+        .nav-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+            transition: var(--transition);
+        }
+
+        header.active .logo {
+            color: var(--main-color);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-menu a {
+            color: #fff;
+            font-size: 1rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        header.active .nav-menu a {
+            color: var(--dark-color);
+        }
+
+        .nav-menu a::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--main-color);
+            transition: var(--transition);
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        /* 首页横幅 - 渐变+动画 */
+        .banner {
+            height: 100vh;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #fff;
+        }
+
+        .banner-text h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            animation: fadeInDown 1s ease;
+        }
+
+        .banner-text p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 35px;
+            background: #fff;
+            color: var(--main-color);
+            font-weight: 600;
+            border-radius: 50px;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        /* 关于我 */
+        .about {
+            padding: 100px 0;
+            background: #f8fafc;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-img img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--main-color);
+        }
+
+        .about-text p {
+            color: var(--gray-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        /* 技能区域 - Grid网格布局 */
+        .skill {
+            padding: 100px 0;
+        }
+
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .skill-card {
+            background: #fff;
+            padding: 2.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .skill-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+        }
+
+        .skill-card h4 {
+            font-size: 1.3rem;
+            margin: 1rem 0;
+            color: var(--dark-color);
+        }
+
+        .skill-card p {
+            color: var(--gray-color);
+        }
+
+        /* 项目案例 */
+        .project {
+            padding: 100px 0;
+            background: #f8fafc;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .project-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: var(--transition);
+        }
+
+        .project-card:hover {
+            transform: scale(1.03);
+        }
+
+        .project-img {
+            height: 200px;
+            background: linear-gradient(45deg, #2563eb, #818cf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        .project-info {
+            padding: 1.5rem;
+        }
+
+        .project-info h4 {
+            font-size: 1.25rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .project-info p {
+            color: var(--gray-color);
+            font-size: 0.95rem;
+        }
+
+        /* 留言表单 */
+        .contact {
+            padding: 100px 0;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: var(--main-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .contact-form textarea {
+            min-height: 150px;
+            resize: none;
+        }
+
+        .submit-btn {
+            border: none;
+            background: var(--main-color);
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* 页脚 */
+        footer {
+            background: var(--dark-color);
+            color: #fff;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* 返回顶部 */
+        .back-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 45px;
+            height: 45px;
+            background: var(--main-color);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 99;
+        }
+
+        .back-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 动画 */
+        @keyframes fadeInDown {
+            from {opacity: 0; transform: translateY(-30px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        @keyframes fadeInUp {
+            from {opacity: 0; transform: translateY(30px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .banner-text h1 {
+                font-size: 2.2rem;
+            }
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+            .nav-menu {
+                gap: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header id="navbar">
+        <div class="container nav-box">
+            <a href="#" class="logo">Portfolio</a>
+            <ul class="nav-menu">
+                <li><a href="#home">首页</a></li>
+                <li><a href="#about">关于我</a></li>
+                <li><a href="#skill">技能特长</a></li>
+                <li><a href="#project">项目案例</a></li>
+                <li><a href="#contact">在线留言</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- 首页横幅 -->
+    <section class="banner" id="home">
+        <div class="container banner-text">
+            <h1>高级网页设计三级项目</h1>
+            <p>基于HTML5+CSS3+JavaScript | 响应式作品集网站</p>
+            <a href="#project" class="btn">查看作品</a>
+        </div>
+    </section>
+
+    <!-- 关于我 -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title">关于我</h2>
+            <div class="about-content">
+                <div class="about-img">
+                    <img src="https://picsum.photos/600/400" alt="个人照片">
+                </div>
+                <div class="about-text">
+                    <h3>前端设计与开发爱好者</h3>
+                    <p>本项目为高级网页设计课程三级综合项目，采用HTML5语义化标签、CSS3高级样式、Flex与Grid现代布局开发，结合原生JavaScript实现交互效果，页面美观、结构规范、适配移动端与电脑端。</p>
+                    <p>熟练掌握网页布局、动画设计、响应式开发、表单交互等核心技术，严格遵循网页开发规范，代码分层清晰，适合课程三级项目考核标准。</p>
+                    <a href="#contact" class="btn">联系我</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技能特长 -->
+    <section class="skill" id="skill">
+        <div class="container">
+            <h2 class="section-title">专业技能</h2>
+            <div class="skill-grid">
+                <div class="skill-card">
+                    <h4>HTML5 语义化</h4>
+                    <p>熟练使用语义化标签构建规范网页结构，提升SEO与页面可读性，符合现代网页开发标准。</p>
+                </div>
+                <div class="skill-card">
+                    <h4>CSS3 高级样式</h4>
+                    <p>精通渐变、阴影、滤镜、过渡、动画等高级特性，实现精美视觉效果与动态页面。</p>
+                </div>
+                <div class="skill-card">
+                    <h4>现代布局技术</h4>
+                    <p>熟练运用Flex弹性布局与Grid网格布局，替代传统浮动布局，页面结构更稳定简洁。</p>
+                </div>
+                <div class="skill-card">
+                    <h4>响应式开发</h4>
+                    <p>使用媒体查询+相对单位，实现电脑、平板、手机多端自适应显示，兼容主流设备。</p>
+                </div>
+                <div class="skill-card">
+                    <h4>JavaScript 交互</h4>
+                    <p>掌握原生JS DOM操作、事件监听、表单验证、滚动交互、返回顶部等常用网页功能。</p>
+                </div>
+                <div class="skill-card">
+                    <h4>网页优化规范</h4>
+                    <p>遵循代码规范，结构、样式、行为分离，优化页面加载速度与用户体验。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 项目案例 -->
+    <section class="project" id="project">
+        <div class="container">
+            <h2 class="section-title">项目作品</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="project-img">作品一</div>
+                    <div class="project-info">
+                        <h4>企业官方网站设计</h4>
+                        <p>采用响应式布局，包含导航、轮播、产品展示、关于我们、联系模块，动画效果丰富。</p>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-img">作品二</div>
+                    <div class="project-info">
+                        <h4>个人博客网页设计</h4>
+                        <p>语义化结构清晰，网格布局展示文章列表，适配移动端，交互简洁流畅。</p>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-img">作品三</div>
+                    <div class="project-info">
+                        <h4>创意展示单页网站</h4>
+                        <p>滚动动画、悬停动效、渐变配色，视觉效果高级，符合现代UI设计风格。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 在线留言 -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">在线留言</h2>
+            <form class="contact-form" id="form">
+                <input type="text" id="name" placeholder="请输入你的姓名" required>
+                <input type="email" id="email" placeholder="请输入你的邮箱" required>
+                <textarea id="msg" placeholder="请输入留言内容" required></textarea>
+                <input type="submit" value="提交留言" class="submit-btn">
+            </form>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>高级网页设计三级项目 · 原创设计 版权所有</p>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <a href="#" class="back-top" id="backTop">↑</a>
+
+    <!-- JavaScript交互代码 -->
+    <script>
+        // 导航栏滚动变色
+        let navbar = document.getElementById('navbar');
+        window.addEventListener('scroll',function(){
+            if(window.scrollY > 50){
+                navbar.classList.add('active');
+            }else{
+                navbar.classList.remove('active');
+            }
+        })
+
+        // 返回顶部
+        let backTop = document.getElementById('backTop');
+        window.addEventListener('scroll',function(){
+            if(window.scrollY > 300){
+                backTop.classList.add('show');
+            }else{
+                backTop.classList.remove('show');
+            }
+        })
+
+        // 表单验证
+        let form = document.getElementById('form');
+        form.addEventListener('submit',function(e){
+            let name = document.getElementById('name').value;
+            let email = document.getElementById('email').value;
+            let msg = document.getElementById('msg').value;
+            if(name && email && msg){
+                alert('留言提交成功！');
+                form.reset();
+            }else{
+                alert('请完善所有信息！');
+                e.preventDefault();
+            }
+        })
+    </script>
+</body>
+</html>

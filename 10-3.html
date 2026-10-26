@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10-3 响应式设计与媒体查询</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.5s ease;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            width: 90vw;
+            height: 90vh;
+            max-width: 1200px;
+            border-radius: 20px;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.3rem;
+        }
+
+        .name {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 2rem 0;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        p {
+            font-size: 1.25rem;
+            color: white;
+            line-height: 1.8;
+            max-width: 600px;
+            margin-bottom: 1rem;
+        }
+
+        .info {
+            margin-top: 2rem;
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .info p {
+            font-size: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* 媒体查询 - 不同视口宽度的背景颜色和字体大小 */
+        
+        /* 超小屏幕 (手机) - 小于 480px */
+        @media screen and (max-width: 480px) {
+            html {
+                font-size: 12px;
+            }
+            
+            body {
+                background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            }
+            
+            .container {
+                width: 95vw;
+                height: 95vh;
+                padding: 2rem 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .name {
+                font-size: 2.5rem;
+            }
+            
+            p {
+                font-size: 1rem;
+            }
+        }
+
+        /* 小屏幕 (大手机/小平板) - 481px 到 768px */
+        @media screen and (min-width: 481px) and (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+            
+            body {
+                background: linear-gradient(135deg, #a55eea, #8854d0);
+            }
+            
+            .container {
+                padding: 2.5rem 2rem;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .name {
+                font-size: 3rem;
+            }
+            
+            p {
+                font-size: 1.125rem;
+            }
+        }
+
+        /* 中等屏幕 (平板) - 769px 到 1024px */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            html {
+                font-size: 16px;
+            }
+            
+            body {
+                background: linear-gradient(135deg, #4b7bec, #3867d6);
+            }
+            
+            .container {
+                padding: 3rem;
+            }
+            
+            h1 {
+                font-size: 2.75rem;
+            }
+            
+            .name {
+                font-size: 3.5rem;
+            }
+        }
+
+        /* 大屏幕 (桌面) - 1025px 到 1440px */
+        @media screen and (min-width: 1025px) and (max-width: 1440px) {
+            html {
+                font-size: 18px;
+            }
+            
+            body {
+                background: linear-gradient(135deg, #26de81, #20bf6b);
+            }
+            
+            h1 {
+                font-size: 3rem;
+            }
+            
+            .name {
+                font-size: 4rem;
+            }
+        }
+
+        /* 超大屏幕 (大显示器) - 大于 1440px */
+        @media screen and (min-width: 1441px) {
+            html {
+                font-size: 20px;
+            }
+            
+            body {
+                background: linear-gradient(135deg, #fed330, #f7b731);
+            }
+            
+            .container {
+                max-width: 1400px;
+                padding: 4rem;
+            }
+            
+            h1 {
+                font-size: 3.5rem;
+            }
+            
+            .name {
+                font-size: 4.5rem;
+            }
+            
+            p {
+                font-size: 1.375rem;
+            }
+        }
+
+        /* 横屏模式优化 */
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            .container {
+                flex-direction: row;
+                gap: 3rem;
+                padding: 2rem 3rem;
+            }
+            
+            .text-content {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-content">
+            <h1>响应式网页设计</h1>
+            <div class="name">杨长鉷</div>
+            <p>这是一个使用 CSS 媒体查询和 rem 单位实现的响应式页面</p>
+            <p>当您调整浏览器窗口大小时，背景颜色和文字大小会自动变化</p>
+            
+            <div class="info">
+                <p>📱 当前视口宽度会触发不同的样式</p>
+                <p>🎨 背景颜色随屏幕尺寸动态变化</p>
+                <p>📏 使用 rem 单位实现文字大小自适应</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('resize', function() {
+            console.log('当前视口宽度:', window.innerWidth + 'px');
+            console.log('根元素字体大小:', getComputedStyle(document.documentElement).fontSize);
+        });
+    </script>
+</body>
+</html>

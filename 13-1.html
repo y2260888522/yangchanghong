@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Font Awesome 字体图标</title>
+<link rel="stylesheet" href="fontawesome/css/all.min.css">
+<style>
+  body { font-family: "Segoe UI", "Microsoft YaHei", sans-serif; margin: 0; background: #f5f7fa; color: #333; }
+  header { background: #1877f2; color: #fff; padding: 24px 40px; }
+  header h1 { margin: 0; font-size: 24px; }
+  header p { margin: 6px 0 0; opacity: .85; }
+  main { padding: 30px 40px; }
+  h2 { font-size: 18px; border-left: 4px solid #1877f2; padding-left: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; margin-bottom: 30px; }
+  .card { background: #fff; border-radius: 8px; padding: 18px 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .card i { font-size: 30px; display: block; margin-bottom: 10px; }
+  .card span { font-size: 13px; color: #666; }
+  .sizes i { font-size: 16px; margin: 0 8px; }
+  .sizes i.lg { font-size: 24px; }
+  .sizes i.xl { font-size: 36px; }
+  .colors .c1 { color: #e74c3c; } .colors .c2 { color: #2ecc71; } .colors .c3 { color: #f39c12; } .colors .c4 { color: #9b59b6; }
+  .spin { animation: spin 2s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Font Awesome 字体图标演示</h1>
+  <p>图标以字体（webfont）形式渲染：本地文件 fontawesome/css/all.min.css + fontawesome/webfonts/*</p>
+</header>
+<main>
+  <h2>常用图标（实心 fa-solid）</h2>
+  <div class="grid">
+    <div class="card"><i class="fa-solid fa-house"></i><span>fa-house</span></div>
+    <div class="card"><i class="fa-solid fa-user"></i><span>fa-user</span></div>
+    <div class="card"><i class="fa-solid fa-gear"></i><span>fa-gear</span></div>
+    <div class="card"><i class="fa-solid fa-magnifying-glass"></i><span>fa-magnifying-glass</span></div>
+    <div class="card"><i class="fa-solid fa-heart"></i><span>fa-heart</span></div>
+    <div class="card"><i class="fa-solid fa-star"></i><span>fa-star</span></div>
+    <div class="card"><i class="fa-solid fa-bell"></i><span>fa-bell</span></div>
+    <div class="card"><i class="fa-solid fa-envelope"></i><span>fa-envelope</span></div>
+    <div class="card"><i class="fa-solid fa-calendar"></i><span>fa-calendar</span></div>
+    <div class="card"><i class="fa-solid fa-camera"></i><span>fa-camera</span></div>
+    <div class="card"><i class="fa-solid fa-download"></i><span>fa-download</span></div>
+    <div class="card"><i class="fa-solid fa-trash"></i><span>fa-trash</span></div>
+    <div class="card"><i class="fa-solid fa-pen"></i><span>fa-pen</span></div>
+    <div class="card"><i class="fa-solid fa-circle-check"></i><span>fa-circle-check</span></div>
+    <div class="card"><i class="fa-solid fa-circle-info"></i><span>fa-circle-info</span></div>
+    <div class="card"><i class="fa-solid fa-bars"></i><span>fa-bars</span></div>
+  </div>
+
+  <h2>描边风格（regular）与品牌图标（brands）</h2>
+  <div class="grid">
+    <div class="card"><i class="fa-regular fa-heart"></i><span>fa-regular fa-heart</span></div>
+    <div class="card"><i class="fa-regular fa-star"></i><span>fa-regular fa-star</span></div>
+    <div class="card"><i class="fa-regular fa-bell"></i><span>fa-regular fa-bell</span></div>
+    <div class="card"><i class="fa-regular fa-envelope"></i><span>fa-regular fa-envelope</span></div>
+    <div class="card"><i class="fa-brands fa-github"></i><span>fa-brands fa-github</span></div>
+    <div class="card"><i class="fa-brands fa-twitter"></i><span>fa-brands fa-twitter</span></div>
+    <div class="card"><i class="fa-brands fa-facebook"></i><span>fa-brands fa-facebook</span></div>
+    <div class="card"><i class="fa-brands fa-html5"></i><span>fa-brands fa-html5</span></div>
+  </div>
+
+  <h2>字体图标的特性：可像文字一样缩放、着色</h2>
+  <p class="sizes">
+    小 <i class="fa-solid fa-anchor"></i>
+    <i class="fa-solid fa-anchor lg"></i>
+    <i class="fa-solid fa-anchor xl"></i>
+    &nbsp;|&nbsp; 颜色：
+    <i class="fa-solid fa-diamond fa-2x c1"></i>
+    <i class="fa-solid fa-diamond fa-2x c2"></i>
+    <i class="fa-solid fa-diamond fa-2x c3"></i>
+    <i class="fa-solid fa-diamond fa-2x c4"></i>
+    &nbsp;|&nbsp; 旋转：
+    <i class="fa-solid fa-spinner spin fa-2x"></i>
+    &nbsp;|&nbsp; 描边阴影：
+    <i class="fa-solid fa-certificate fa-2x" style="color:#1877f2;"></i>
+  </p>
+</main>
+</body>
+</html>

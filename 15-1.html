@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数7游戏</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .box {
+      width: 80px;
+      height: 80px;
+      border: 2px solid #333;
+      background-color: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      border-radius: 8px;
+    }
+    .special {
+      background-color: #ff6b6b;
+      color: #fff;
+      border-color: #c92a2a;
+    }
+  </style>
+</head>
+<body>
+  <h2>数7游戏 - 1到100</h2>
+  <div class="container" id="container"></div>
+  <script>
+    var container = document.getElementById("container");
+    var html = "";
+    for (var i = 1; i <= 100; i++) {
+      if (i % 7 === 0 || i % 10 === 7) {
+        html += '<div class="box special">盒子</div>';
+      } else {
+        html += '<div class="box">' + i + '</div>';
+      }
+    }
+    container.innerHTML = html;
+  </script>
+</body>
+</html>

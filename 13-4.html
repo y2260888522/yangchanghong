@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>下导航 - SVG 图标方案</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f5f6f8;
+      /* 给固定导航留出底部空间 */
+      padding-bottom: calc(60px + env(safe-area-inset-bottom));
+    }
+
+    /* ===== SVG 图标基础样式：stroke 描边，currentColor 随文字变色 ===== */
+    .icon-svg {
+      width: 1em;
+      height: 1em;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: -0.12em;
+    }
+
+    /* ===== 顶部栏 ===== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      height: 48px;
+      padding: 0 14px;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+    }
+    .topbar__brand { margin-right: auto; font-size: 17px; font-weight: 700; color: #ff5a3c; }
+    .topbar__btn {
+      position: relative;
+      margin-left: 16px;
+      color: #333;
+      text-decoration: none;
+      font-size: 20px;                 /* SVG 图标大小（1em=20px）—— 考核点 */
+    }
+    .topbar__btn .dot {
+      position: absolute;
+      top: -2px;
+      right: -4px;
+      width: 8px;
+      height: 8px;
+      background: #ff3b30;
+      border-radius: 50%;
+    }
+
+    /* ===== 页面内容 ===== */
+    .page { padding: 12px; }
+
+    .banner { border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, .06); }
+    .banner img { display: block; width: 100%; height: 150px; object-fit: cover; }
+
+    /* 快捷入口 */
+    .quick {
+      display: flex;
+      margin: 14px 0;
+      padding: 12px 0;
+      background: #fff;
+      border-radius: 12px;
+    }
+    .quick__item {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: #666;
+      font-size: 12px;
+      text-decoration: none;
+    }
+    .quick__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #fff1ec;
+      color: #ff5a3c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;                 /* SVG 图标大小（1em=22px）—— 考核点 */
+      transition: transform .2s;
+    }
+    .quick__item:active .quick__icon { transform: scale(.9); }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      margin: 16px 0 10px;
+      font-size: 16px;
+    }
+    .section-title::before {
+      content: "";
+      width: 4px;
+      height: 14px;
+      margin-right: 6px;
+      border-radius: 2px;
+      background: #ff5a3c;
+    }
+    .section-title a { margin-left: auto; font-size: 12px; color: #999; text-decoration: none; }
+
+    /* 商品卡片 */
+    .goods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .goods__card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+    }
+    .goods__card img { display: block; width: 100%; height: 110px; object-fit: cover; }
+    .goods__body { padding: 8px 10px 10px; }
+    .goods__name { font-size: 13px; color: #333; margin-bottom: 4px; }
+    .goods__meta { display: flex; align-items: center; }
+    .goods__price { margin-right: auto; font-size: 14px; font-weight: 700; color: #ff5a3c; }
+    .goods__like {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      color: #999;
+      text-decoration: none;
+    }
+    .goods__like .icon-svg { font-size: 14px; color: #ff5a3c; }
+
+    /* 推荐列表 */
+    .feed { background: #fff; border-radius: 12px; }
+    .feed__item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-bottom: 1px solid #f2f2f2;
+      text-decoration: none;
+      color: inherit;
+    }
+    .feed__item:last-child { border-bottom: none; }
+    .feed__icon {
+      width: 38px;
+      height: 38px;
+      flex: none;
+      border-radius: 10px;
+      background: #eef7ff;
+      color: #3b82f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;                 /* SVG 图标大小（1em=18px）—— 考核点 */
+    }
+    .feed__txt { flex: 1; min-width: 0; }
+    .feed__txt h3 { font-size: 14px; margin-bottom: 2px; }
+    .feed__txt p { font-size: 12px; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .feed__arrow { color: #ccc; font-size: 14px; }
+
+    .tip {
+      margin: 16px 0 8px;
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      line-height: 1.8;
+    }
+
+    /* ===== 下导航容器 ===== */
+    .tabbar {
+      position: fixed;       /* 固定效果：不随页面滚动 */
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+      display: flex;         /* 自适应宽度的核心：flex 等分 */
+      width: 100%;           /* 全屏宽度 */
+      background: #fff;
+      border-top: 1px solid #e6e6e6;
+      padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
+      touch-action: none;    /* 触摸拖动时不触发页面滚动 */
+    }
+    /* 拖动把手 */
+    .tabbar::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: #e0e0e0;
+    }
+
+    .tabbar__item {
+      flex: 1 1 0;           /* 等分剩余空间，宽度自适应 */
+      min-width: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 8px 0 4px;
+      color: #8a8f99;
+      text-decoration: none;
+      font-size: 11px;
+      transition: color .2s;
+    }
+    .icon-wrap { position: relative; width: 22px; height: 22px; }
+
+    /* SVG 图标本体 */
+    .tabbar__icon {
+      width: 22px;           /* 改变图标大小 —— 考核点 */
+      height: 22px;
+      fill: none;
+      stroke: currentColor;  /* 改变颜色 —— 考核点 */
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: top;
+      transition: color .2s, transform .2s;
+    }
+
+    .tabbar__item.is-active,
+    .tabbar__item:hover { color: #ff5a3c; }
+    .tabbar__item:active .tabbar__icon { transform: scale(0.9); }
+
+    /* 数字徽章：图标右上角 */
+    .tabbar__badge {
+      position: absolute;
+      top: -7px;
+      left: 12px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      background: #ff3b30;
+      color: #fff;
+      font-size: 10px;
+      line-height: 16px;
+      font-style: normal;
+      text-align: center;
+      border-radius: 9px;
+      box-shadow: 0 0 0 2px #fff;
+    }
+    /* 红点：图标右上角 */
+    .tabbar__dot {
+      position: absolute;
+      top: -2px;
+      right: -9px;
+      width: 8px;
+      height: 8px;
+      background: #ff3b30;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 顶部栏 ===== -->
+  <header class="topbar">
+    <span class="topbar__brand">yx商城</span>
+    <a class="topbar__btn" href="javascript:;"><svg class="icon-svg" aria-hidden="true"><use href="#icon-sousuo"></use></svg></a>
+    <a class="topbar__btn" href="javascript:;"><svg class="icon-svg" aria-hidden="true"><use href="#icon-gengduo"></use></svg><span class="dot"></span></a>
+  </header>
+
+  <div class="page">
+    <!-- Banner -->
+    <section class="banner">
+      <img src="1%20(9).jpg" alt="banner">
+    </section>
+
+    <!-- 快捷入口 -->
+    <section class="quick">
+      <a class="quick__item" href="javascript:;">
+        <span class="quick__icon"><svg class="icon-svg" aria-hidden="true"><use href="#icon-weixin"></use></svg></span>微信
+      </a>
+      <a class="quick__item" href="javascript:;">
+        <span class="quick__icon"><svg class="icon-svg" aria-hidden="true"><use href="#icon-dianhua"></use></svg></span>电话
+      </a>
+      <a class="quick__item" href="javascript:;">
+        <span class="quick__icon"><svg class="icon-svg" aria-hidden="true"><use href="#icon-bianji"></use></svg></span>创作
+      </a>
+      <a class="quick__item" href="javascript:;">
+        <span class="quick__icon"><svg class="icon-svg" aria-hidden="true"><use href="#icon-langdu"></use></svg></span>朗读
+      </a>
+    </section>
+
+    <!-- 商品推荐 -->
+    <h2 class="section-title">热门推荐 <a href="javascript:;">更多 ></a></h2>
+    <section class="goods">
+      <div class="goods__card">
+        <img src="1%20(10).jpg" alt="商品1">
+        <div class="goods__body">
+          <div class="goods__name">智能运动手表 Pro</div>
+          <div class="goods__meta">
+            <span class="goods__price">¥399</span>
+            <a class="goods__like" href="javascript:;"><svg class="icon-svg" aria-hidden="true"><use href="#icon-dianzan"></use></svg>128</a>
+          </div>
+        </div>
+      </div>
+      <div class="goods__card">
+        <img src="1%20(11).jpg" alt="商品2">
+        <div class="goods__body">
+          <div class="goods__name">真无线蓝牙耳机</div>
+          <div class="goods__meta">
+            <span class="goods__price">¥199</span>
+            <a class="goods__like" href="javascript:;"><svg class="icon-svg" aria-hidden="true"><use href="#icon-dianzan"></use></svg>86</a>
+          </div>
+        </div>
+      </div>
+      <div class="goods__card">
+        <img src="拖拽色彩特效.jpg" alt="商品3">
+        <div class="goods__body">
+          <div class="goods__name">创意色彩氛围灯</div>
+          <div class="goods__meta">
+            <span class="goods__price">¥129</span>
+            <a class="goods__like" href="javascript:;"><svg class="icon-svg" aria-hidden="true"><use href="#icon-dianzan"></use></svg>256</a>
+          </div>
+        </div>
+      </div>
+      <div class="goods__card">
+        <img src="1%20(9).jpg" alt="商品4">
+        <div class="goods__body">
+          <div class="goods__name">限定礼盒装</div>
+          <div class="goods__meta">
+            <span class="goods__price">¥520</span>
+            <a class="goods__like" href="javascript:;"><svg class="icon-svg" aria-hidden="true"><use href="#icon-dianzan"></use></svg>99+</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 推荐列表 -->
+    <h2 class="section-title">为你推荐</h2>
+    <section class="feed">
+      <a class="feed__item" href="javascript:;">
+        <span class="feed__icon"><svg class="icon-svg" aria-hidden="true"><use href="#icon-lianxifangshi"></use></svg></span>
+        <div class="feed__txt"><h3>联系方式管理</h3><p>一键整理你的通讯录，重要的人不再丢失</p></div>
+        <span class="feed__arrow">></span>
+      </a>
+      <a class="feed__item" href="javascript:;">
+        <span class="feed__icon" style="background:#f3efff;color:#8b5cf6;"><svg class="icon-svg" aria-hidden="true"><use href="#icon-biaoqing"></use></svg></span>
+        <div class="feed__txt"><h3>表情合集上新</h3><p>斗图必备，2026 最新热门表情包</p></div>
+        <span class="feed__arrow">></span>
+      </a>
+      <a class="feed__item" href="javascript:;">
+        <span class="feed__icon" style="background:#eefbf3;color:#16a34a;"><svg class="icon-svg" aria-hidden="true"><use href="#icon-pingguo"></use></svg></span>
+        <div class="feed__txt"><h3>Apple 专区</h3><p>新品首发，以旧换新最高补贴 800 元</p></div>
+        <span class="feed__arrow">></span>
+      </a>
+      <a class="feed__item" href="javascript:;">
+        <span class="feed__icon" style="background:#fff4e8;color:#f59e0b;"><svg class="icon-svg" aria-hidden="true"><use href="#icon-doubao"></use></svg></span>
+        <div class="feed__txt"><h3>AI 助手豆包</h3><p>写作、翻译、答疑，你的智能小伙伴</p></div>
+        <span class="feed__arrow">></span>
+      </a>
+    </section>
+
+    <p class="tip">向下滚动，底部导航始终保持固定；<br>按住底部导航栏可上下拖动，双击灰色把手回到底部。</p>
+  </div>
+
+  <!-- ===== 下导航（SVG symbol 引用） ===== -->
+  <nav class="tabbar">
+    <a href="javascript:;" class="tabbar__item is-active">
+      <span class="icon-wrap">
+        <svg class="tabbar__icon" aria-hidden="true"><use href="#icon-shouye"></use></svg>
+        <span class="tabbar__badge">12</span>
+        <span class="tabbar__dot"></span>
+      </span>
+      <span>首页</span>
+    </a>
+    <a href="javascript:;" class="tabbar__item">
+      <span class="icon-wrap">
+        <svg class="tabbar__icon" aria-hidden="true"><use href="#icon-faxian"></use></svg>
+        <span class="tabbar__badge">99+</span>
+        <span class="tabbar__dot"></span>
+      </span>
+      <span>发现</span>
+    </a>
+    <a href="javascript:;" class="tabbar__item">
+      <span class="icon-wrap">
+        <svg class="tabbar__icon" aria-hidden="true"><use href="#icon-shangcheng"></use></svg>
+        <span class="tabbar__badge">8</span>
+        <span class="tabbar__dot"></span>
+      </span>
+      <span>商城</span>
+    </a>
+    <a href="javascript:;" class="tabbar__item">
+      <span class="icon-wrap">
+        <svg class="tabbar__icon" aria-hidden="true"><use href="#icon-denglu"></use></svg>
+        <span class="tabbar__badge">3</span>
+        <span class="tabbar__dot"></span>
+      </span>
+      <span>我的</span>
+    </a>
+  </nav>
+
+  <!-- iconfont.js 注入 SVG 雪碧图（symbol 定义） -->
+  <script src="font_5244828_c4e398q28pq/iconfont.js"></script>
+  <script>
+    document.querySelectorAll('.tabbar__item').forEach(function (item) {
+      item.addEventListener('click', function () {
+        var cur = document.querySelector('.tabbar__item.is-active');
+        if (cur) cur.classList.remove('is-active');
+        item.classList.add('is-active');
+      });
+    });
+
+    /* 底部导航栏上下拖动 */
+    (function () {
+      var bar = document.querySelector('.tabbar');
+      var startY = 0, dy = 0, dragging = false, moved = false;
+      var maxUp = 260, maxDown = 40;
+      bar.addEventListener('pointerdown', function (e) {
+        dragging = true; moved = false; startY = e.clientY;
+        bar.style.transition = 'none';
+        if (bar.setPointerCapture) bar.setPointerCapture(e.pointerId);
+      });
+      bar.addEventListener('pointermove', function (e) {
+        if (!dragging) return;
+        dy = e.clientY - startY;
+        if (Math.abs(dy) > 6) moved = true;
+        if (dy > maxDown) dy = maxDown;
+        if (dy < -maxUp) dy = -maxUp;
+        bar.style.transform = 'translateY(' + dy + 'px)';
+      });
+      function end() {
+        if (!dragging) return;
+        dragging = false;
+        bar.style.transition = 'transform .3s ease';
+      }
+      bar.addEventListener('pointerup', end);
+      bar.addEventListener('pointercancel', end);
+      bar.addEventListener('click', function (e) {
+        if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+      }, true);
+      bar.addEventListener('dblclick', function () {
+        bar.style.transition = 'transform .3s ease';
+        bar.style.transform = 'translateY(0)';
+      });
+    })();
+  </script>
+</body>
+</html>

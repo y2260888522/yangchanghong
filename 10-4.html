@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10-4 媒体查询响应式布局</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            min-width: 320px;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .author {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            margin-top: 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .box-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .box {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 180px;
+        }
+
+        .box:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .box-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .box h3 {
+            font-size: 1.25rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .box p {
+            font-size: 0.875rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .box:nth-child(1) { border-top: 5px solid #ff6b6b; }
+        .box:nth-child(2) { border-top: 5px solid #feca57; }
+        .box:nth-child(3) { border-top: 5px solid #48dbfb; }
+        .box:nth-child(4) { border-top: 5px solid #ff9ff3; }
+        .box:nth-child(5) { border-top: 5px solid #54a0ff; }
+        .box:nth-child(6) { border-top: 5px solid #5f27cd; }
+        .box:nth-child(7) { border-top: 5px solid #00d2d3; }
+        .box:nth-child(8) { border-top: 5px solid #ff9f43; }
+
+        .info-bar {
+            text-align: center;
+            color: white;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-bar p {
+            font-size: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        /* 媒体查询 - 响应式布局 */
+
+        /* 超小屏幕 (320px - 480px): 1列 */
+        @media screen and (min-width: 320px) and (max-width: 480px) {
+            html {
+                font-size: 14px;
+            }
+
+            .box {
+                width: 100%;
+                min-height: 150px;
+            }
+
+            .box-icon {
+                font-size: 2.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .author {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* 小屏幕 (481px - 768px): 2列 */
+        @media screen and (min-width: 481px) and (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+
+            .box {
+                width: calc(50% - 0.5rem);
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .author {
+                font-size: 1.35rem;
+            }
+        }
+
+        /* 中等屏幕 (769px - 1024px): 4列 */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            html {
+                font-size: 15px;
+            }
+
+            .box {
+                width: calc(25% - 0.75rem);
+            }
+
+            .header h1 {
+                font-size: 2.25rem;
+            }
+        }
+
+        /* 大屏幕 (1025px - 1440px): 4列 */
+        @media screen and (min-width: 1025px) and (max-width: 1440px) {
+            html {
+                font-size: 16px;
+            }
+
+            .box {
+                width: calc(25% - 0.75rem);
+            }
+        }
+
+        /* 超大屏幕 (>1440px): 8列 (一行显示所有盒子) */
+        @media screen and (min-width: 1441px) {
+            html {
+                font-size: 17px;
+            }
+
+            .box-grid {
+                gap: 1.5rem;
+            }
+
+            .box {
+                width: calc(12.5% - 1.3125rem);
+            }
+
+            .container {
+                max-width: 1600px;
+            }
+
+            .header h1 {
+                font-size: 3rem;
+            }
+
+            .author {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* 横屏手机优化 */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            body {
+                padding: 1rem;
+            }
+
+            .box {
+                width: calc(25% - 0.75rem);
+                min-height: 120px;
+                padding: 1.5rem 1rem;
+            }
+
+            .box-icon {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .box h3 {
+                font-size: 1rem;
+            }
+
+            .box p {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>响应式网格布局</h1>
+        <p style="font-size: 1.125rem; opacity: 0.95;">Media Query 自适应八盒子展示</p>
+        <div class="author">杨长鉷</div>
+    </div>
+
+    <div class="container">
+        <div class="box-grid">
+            <div class="box">
+                <div class="box-icon">🎨</div>
+                <h3>创意设计</h3>
+                <p>独特的视觉体验</p>
+            </div>
+
+            <div class="box">
+                <div class="box-icon">💡</div>
+                <h3>创新思维</h3>
+                <p>突破传统界限</p>
+            </div>
+
+            <div class="box">
+                <div class="box-icon">🚀</div>
+                <h3>快速开发</h3>
+                <p>高效的工作流程</p>
+            </div>
+
+            <div class="box">
+                <div class="box-icon">📱</div>
+                <h3>移动优先</h3>
+                <p>完美的移动体验</p>
+            </div>
+
+            <div class="box">
+                <div class="box-icon">⚡</div>
+                <h3>性能优化</h3>
+                <p>极速加载响应</p>
+            </div>
+
+            <div class="box">
+                <div class="box-icon">🔒</div>
+                <h3>安全可靠</h3>
+                <p>数据安全保障</p>
+            </div>
+
+            <div class="box">
+                <div class="box-icon">🎯</div>
+                <h3>精准定位</h3>
+                <p>目标导向设计</p>
+            </div>
+
+            <div class="box">
+                <div class="box-icon">✨</div>
+                <h3>卓越品质</h3>
+                <p>追求完美细节</p>
+            </div>
+        </div>
+
+        <div class="info-bar">
+            <p><strong>💻 当前布局模式：</strong>调整浏览器窗口大小查看变化</p>
+            <p id="viewport-info"></p>
+        </div>
+    </div>
+
+    <script>
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            let layout = '';
+            
+            if (width <= 480) {
+                layout = '📱 超小屏幕 - 单列布局 (1个盒子/行)';
+            } else if (width <= 768) {
+                layout = '📱 小屏幕 - 双列布局 (2个盒子/行)';
+            } else if (width <= 1440) {
+                layout = '💻 中大屏幕 - 四列布局 (4个盒子/行)';
+            } else {
+                layout = '🖥️ 超大屏幕 - 八列布局 (8个盒子/行)';
+            }
+            
+            document.getElementById('viewport-info').textContent = 
+                `视口宽度: ${width}px | ${layout}`;
+        }
+
+        window.addEventListener('resize', updateViewportInfo);
+        updateViewportInfo();
+    </script>
+</body>
+</html>

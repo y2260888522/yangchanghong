@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>野生存 · 荒野求生科普</title>
+  <meta name="description" content="野外生存知识科普：应急避险、寻找净水、钻木取火、搭建庇护所">
+
+  <!-- ============================================================
+       1. 引入 iconfont 字体图标
+       把你从 iconfont 下载的文件夹改名为 iconfont，放在本文件同级目录
+       文件夹里应有：iconfont.css / iconfont.woff2 / iconfont.woff / iconfont.ttf
+       如文件夹名不同，改下面 href 即可
+       ============================================================ -->
+  <link rel="stylesheet" href="iconfont/iconfont.css">
+  <link rel="stylesheet" href="iconfont/iconname-fix.css">
+
+  <style>
+    /* ==========================================================
+       wx 全局基础样式（wx = 姓名缩写，全站统一前缀，不使用 id 选择器）
+       ========================================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      /* 主题色板：深林绿 + 警示橙 + 土黄 */
+      --wx-deep:    #1b2b1f;   /* 深林绿，导航底色 */
+      --wx-green:   #2c4534;   /* 次级绿 */
+      --wx-leaf:    #3f7a4d;   /* 叶片绿，主色 */
+      --wx-moss:    #8fa698;   /* 苔藓灰绿，次要文字 */
+      --wx-orange:  #ff8c1a;   /* 警示橙，强调色 */
+      --wx-fire:    #e85d2a;   /* 火焰红橙 */
+      --wx-sand:    #f2eee6;   /* 沙土米白，页面底色 */
+      --wx-ink:     #253228;   /* 正文墨绿黑 */
+      --wx-gray:    #7b857e;   /* 辅助灰 */
+      --wx-line:    #e3ded4;   /* 分割线 */
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+                   "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--wx-ink);
+      background: var(--wx-sand);
+      line-height: 1.6;
+      /* 关键：为固定在底部的下导航预留空间，避免遮挡页面最后内容 */
+      padding-bottom: calc(62px + env(safe-area-inset-bottom));
+      /* 整体限宽，PC 浏览时居中显示，模拟移动端 */
+      max-width: 750px;
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+      background: #f7f5f0;
+    }
+
+    img { display: block; max-width: 100%; }
+    a   { text-decoration: none; color: inherit; }
+    ul  { list-style: none; }
+
+    /* ==========================================================
+       顶部栏：吸顶、品牌名 + 搜索 + 更多
+       ========================================================== */
+    .wx-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      height: 52px;
+      padding: 0 14px;
+      background: rgba(27, 43, 31, .96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #fff;
+    }
+
+    .wx-topbar__brand {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-right: auto;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* 品牌图标：用字体图标，font-size 控制大小 */
+    .wx-topbar__brand .iconfont {
+      font-size: 20px;
+      color: var(--wx-orange);
+    }
+
+    .wx-topbar__btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      margin-left: 6px;
+      border-radius: 50%;
+      color: #dfe7e1;
+      font-size: 19px;          /* 字体图标大小 */
+      transition: background .2s, color .2s;
+    }
+    .wx-topbar__btn:hover  { background: rgba(255,255,255,.12); color: #fff; }
+    .wx-topbar__btn:active { transform: scale(.92); }
+
+    /* 顶部红点 */
+    .wx-topbar__btn .wx-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 7px;
+      height: 7px;
+      background: var(--wx-fire);
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px var(--wx-deep);
+    }
+
+    /* ==========================================================
+       内容区
+       ========================================================== */
+    .wx-page { padding: 12px; }
+
+    /* 首屏主视觉：CSS 渐变模拟荒野暮色，无需外部图片 */
+    .wx-hero {
+      position: relative;
+      overflow: hidden;
+      padding: 26px 20px 24px;
+      border-radius: 16px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 82% 12%, rgba(255,140,26,.55) 0%, rgba(255,140,26,0) 42%),
+        linear-gradient(160deg, #2f4a37 0%, #1b2b1f 55%, #14201a 100%);
+      box-shadow: 0 6px 20px rgba(27,43,31,.18);
+    }
+    /* 装饰性山脊，纯 CSS 绘制 */
+    .wx-hero::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      bottom: -46px;
+      width: 190px;
+      height: 130px;
+      border-radius: 50% 50% 0 0;
+      background: rgba(255,255,255,.05);
+      transform: rotate(-8deg);
+    }
+
+    .wx-hero__tag {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 3px 10px;
+      border: 1px solid rgba(255,140,26,.6);
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: #ffb066;
+    }
+
+    .wx-hero__title {
+      font-size: 23px;
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: .5px;
+    }
+    .wx-hero__title em {
+      font-style: normal;
+      color: var(--wx-orange);
+    }
+
+    .wx-hero__desc {
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+      font-size: 12.5px;
+      line-height: 1.75;
+      color: rgba(255,255,255,.72);
+      max-width: 82%;
+    }
+
+    /* ---------- 四大生存技能快捷入口 ---------- */
+    .wx-quick {
+      display: flex;
+      margin: 14px 0;
+      padding: 14px 4px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(37,50,40,.06);
+    }
+
+    .wx-quick__item {
+      flex: 1 1 0;         /* 自适应等分 */
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      font-size: 11.5px;
+      color: var(--wx-ink);
+      transition: transform .18s;
+    }
+    .wx-quick__item:active { transform: scale(.94); }
+
+    /* 圆形图标底：用字体图标 + 背景色区分技能 */
+    .wx-quick__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      font-size: 22px;      /* 字体图标大小 */
+      transition: transform .2s;
+    }
+    .wx-quick__item:hover .wx-quick__icon { transform: translateY(-3px); }
+
+    /* 四个不同主题色 */
+    .wx-quick__icon--fire   { background: #fff1e8; color: var(--wx-fire); }
+    .wx-quick__icon--water  { background: #e8f2ff; color: #2f7bff; }
+    .wx-quick__icon--shelter{ background: #eef6ec; color: var(--wx-leaf); }
+    .wx-quick__icon--aid    { background: #ffe9ec; color: #e0334d; }
+
+    /* ---------- 区块标题 ---------- */
+    .wx-section-title {
+      display: flex;
+      align-items: center;
+      margin: 18px 2px 10px;
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--wx-ink);
+    }
+    .wx-section-title::before {
+      content: "";
+      width: 4px;
+      height: 15px;
+      margin-right: 7px;
+      border-radius: 2px;
+      background: var(--wx-orange);
+    }
+    .wx-section-title a {
+      margin-left: auto;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: var(--wx-gray);
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .wx-section-title a .iconfont { font-size: 12px; }
+
+    /* ---------- 技能卡片网格 ---------- */
+    .wx-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .wx-card {
+      position: relative;
+      overflow: hidden;
+      padding: 16px 14px 14px;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(37,50,40,.06);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .wx-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(37,50,40,.1);
+    }
+
+    /* 卡片角标序号 */
+    .wx-card__num {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(27,43,31,.06);
+    }
+
+    .wx-card__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      margin-bottom: 10px;
+      border-radius: 11px;
+      font-size: 19px;      /* 字体图标大小 */
+      background: #f4f7f2;
+      color: var(--wx-leaf);
+    }
+
+    .wx-card__title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .wx-card__desc {
+      font-size: 11.5px;
+      line-height: 1.65;
+      color: var(--wx-gray);
+    }
+
+    /* ---------- 生存要诀列表 ---------- */
+    .wx-list {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(37,50,40,.06);
+      overflow: hidden;
+    }
+
+    .wx-list__item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 13px 14px;
+      border-bottom: 1px solid #f2efe8;
+      transition: background .18s;
+    }
+    .wx-list__item:last-child { border-bottom: none; }
+    .wx-list__item:hover { background: #faf9f6; }
+
+    .wx-list__icon {
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      font-size: 18px;      /* 字体图标大小 */
+      background: #eef7ec;
+      color: var(--wx-leaf);
+    }
+
+    .wx-list__body { flex: 1; min-width: 0; }
+    .wx-list__body h3 {
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .wx-list__body p {
+      font-size: 11.5px;
+      color: var(--wx-gray);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .wx-list__arrow {
+      flex: none;
+      font-size: 13px;
+      color: #c9c4b8;
+    }
+
+    /* ---------- 警示条 ---------- */
+    .wx-alert {
+      display: flex;
+      gap: 9px;
+      margin: 16px 0 6px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border-left: 3px solid var(--wx-fire);
+      background: #fff6f1;
+      font-size: 11.5px;
+      line-height: 1.7;
+      color: #8a4a25;
+    }
+    .wx-alert .iconfont {
+      flex: none;
+      font-size: 16px;
+      color: var(--wx-fire);
+      margin-top: 1px;
+    }
+
+    /* ---------- 页脚 ---------- */
+    .wx-footer {
+      padding: 22px 0 16px;
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.9;
+      color: #a8a397;
+    }
+    .wx-footer__line {
+      width: 34px;
+      height: 2px;
+      margin: 0 auto 10px;
+      border-radius: 1px;
+      background: var(--wx-line);
+    }
+
+    /* ==========================================================
+       下导航 —— 本实验核心：字体图标 + 固定底部 + flex 自适应宽度
+       ========================================================== */
+    .wx-tabbar {
+      position: fixed;              /* 固定效果：页面滚动时始终贴底 */
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+
+      display: flex;                /* 自适应宽度核心：子项按 flex 等分 */
+      width: 100%;
+      max-width: 750px;             /* 与 body 同宽，大屏时居中限宽 */
+      margin: 0 auto;
+
+      background: var(--wx-deep);
+      border-top: 1px solid #2c4534;
+      padding-bottom: env(safe-area-inset-bottom);   /* 适配 iPhone 底部安全区 */
+      box-shadow: 0 -3px 16px rgba(0, 0, 0, .22);
+    }
+
+    .wx-tabbar__item {
+      flex: 1 1 0;                  /* 关键：5 项等分剩余宽度 */
+      min-width: 0;                 /* 关键：允许收缩，防止徽章/文字撑破等分 */
+      position: relative;
+      display: flex;
+      flex-direction: column;       /* 图标在上、文字在下 */
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 9px 0 6px;
+      color: var(--wx-moss);
+      font-size: 10.5px;
+      transition: color .2s;
+    }
+
+    /* 图标包裹层：为徽章/红点提供定位参照 */
+    .wx-tabbar__icon-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+    }
+
+    /* 字体图标本体：改 font-size 即改大小，改 color 即改颜色 */
+    .wx-tabbar__icon {
+      font-size: 22px;
+      line-height: 1;
+      color: var(--wx-moss);
+      transition: color .2s, transform .2s;
+    }
+
+    .wx-tabbar__text {
+      font-size: 10.5px;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    /* 选中态：图标与文字同步变为警示橙 */
+    .wx-tabbar__item.is-active { color: var(--wx-orange); }
+    .wx-tabbar__item.is-active .wx-tabbar__icon { color: var(--wx-orange); }
+
+    /* 选中项顶部的指示条 */
+    .wx-tabbar__item.is-active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 2px;
+      border-radius: 0 0 2px 2px;
+      background: var(--wx-orange);
+    }
+
+    /* 悬浮态（PC 上可见） */
+    .wx-tabbar__item:hover { color: #cfe0d5; }
+    .wx-tabbar__item:hover .wx-tabbar__icon { color: #cfe0d5; }
+    /* 选中项的 hover 仍保持橙 */
+    .wx-tabbar__item.is-active:hover,
+    .wx-tabbar__item.is-active:hover .wx-tabbar__icon { color: var(--wx-orange); }
+
+    /* 点按反馈 */
+    .wx-tabbar__item:active .wx-tabbar__icon { transform: scale(.88); }
+
+    /* ---------- 红点（无数字，仅提示有新内容） ---------- */
+    .wx-tabbar__dot {
+      position: absolute;
+      top: -1px;
+      right: -2px;
+      width: 7px;
+      height: 7px;
+      background: var(--wx-fire);
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px var(--wx-deep);   /* 描边与导航底色一致，视觉更干净 */
+    }
+
+    /* ---------- 数字徽章 ---------- */
+    .wx-tabbar__badge {
+      position: absolute;
+      top: -6px;
+      left: 13px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      background: var(--wx-fire);
+      color: #fff;
+      font-size: 9.5px;
+      font-weight: 600;
+      line-height: 16px;
+      font-style: normal;
+      text-align: center;
+      border-radius: 8px;
+      box-shadow: 0 0 0 2px var(--wx-deep);
+    }
+
+    /* ==========================================================
+       SVG 对照方案（类名 .wx-svgtab）
+       如需体验 SVG 版下导航，把 <nav class="wx-tabbar"> 换成
+       <nav class="wx-svgtab"> 并参考 svg-demo.html
+       ========================================================== */
+    .wx-svgtab {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 100;
+      display: flex;
+      width: 100%;
+      max-width: 750px;
+      margin: 0 auto;
+      background: var(--wx-deep);
+      border-top: 1px solid #2c4534;
+      padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 -3px 16px rgba(0,0,0,.22);
+    }
+    .wx-svgtab__item {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 9px 0 6px;
+      color: var(--wx-moss);
+      font-size: 10.5px;
+      transition: color .2s;
+    }
+    /* SVG 用 em 定尺寸，随字号缩放；fill:currentColor 继承父级颜色 */
+    .wx-svgtab__icon {
+      width: 1.5em;
+      height: 1.5em;
+      font-size: 15px;
+      fill: currentColor;
+      color: var(--wx-moss);
+      transition: color .2s, transform .2s;
+    }
+    .wx-svgtab__item.is-active { color: var(--wx-orange); }
+    .wx-svgtab__item.is-active .wx-svgtab__icon { color: var(--wx-orange); }
+    .wx-svgtab__item:hover .wx-svgtab__icon { transform: translateY(-2px); }
+
+    /* ==========================================================
+       小屏适配：360px 以下进一步压缩，保证 5 项不换行
+       ========================================================== */
+    @media (max-width: 359px) {
+      .wx-tabbar__icon     { font-size: 20px; }
+      .wx-tabbar__text     { font-size: 10px; }
+      .wx-tabbar__item     { padding: 7px 0 5px; }
+      .wx-card__desc       { font-size: 11px; }
+      .wx-hero__title      { font-size: 20px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ==================== 顶部栏 ==================== -->
+  <header class="wx-topbar">
+    <div class="wx-topbar__brand">
+      <i class="iconfont icon-zhinan"></i>
+      <span>野生存</span>
+    </div>
+    <a class="wx-topbar__btn" href="javascript:;" aria-label="搜索">
+      <i class="iconfont icon-sousuo"></i>
+    </a>
+    <a class="wx-topbar__btn" href="javascript:;" aria-label="更多">
+      <i class="iconfont icon-gengduo"></i>
+      <span class="wx-dot"></span>
+    </a>
+  </header>
+
+  <!-- ==================== 内容区 ==================== -->
+  <main class="wx-page">
+
+    <!-- 主视觉 -->
+    <section class="wx-hero">
+      <span class="wx-hero__tag">WILDERNESS SURVIVAL</span>
+      <h1 class="wx-hero__title">荒野求生<br><em>四件事</em>决定生死</h1>
+      <p class="wx-hero__desc">
+        失温、脱水、迷路、受伤——野外九成危险都源于此。掌握净水、取火、庇护与急救，你就有机会撑到救援抵达。
+      </p>
+    </section>
+
+    <!-- 四大技能入口 -->
+    <section class="wx-quick">
+      <a class="wx-quick__item" href="#fire">
+        <span class="wx-quick__icon wx-quick__icon--fire"><i class="iconfont icon-quhuo"></i></span>
+        <span>取火</span>
+      </a>
+      <a class="wx-quick__item" href="#water">
+        <span class="wx-quick__icon wx-quick__icon--water"><i class="iconfont icon-jingshui"></i></span>
+        <span>净水</span>
+      </a>
+      <a class="wx-quick__item" href="#shelter">
+        <span class="wx-quick__icon wx-quick__icon--shelter"><i class="iconfont icon-biyou"></i></span>
+        <span>庇护</span>
+      </a>
+      <a class="wx-quick__item" href="#aid">
+        <span class="wx-quick__icon wx-quick__icon--aid"><i class="iconfont icon-jijiu"></i></span>
+        <span>急救</span>
+      </a>
+    </section>
+
+    <!-- 生存技能卡 -->
+    <h2 class="wx-section-title">生存技能 <a href="javascript:;">全部 <i class="iconfont icon-gengduo"></i></a></h2>
+    <section class="wx-cards">
+
+      <article class="wx-card" id="fire">
+        <span class="wx-card__num">01</span>
+        <span class="wx-card__icon"><i class="iconfont icon-quhuo"></i></span>
+        <h3 class="wx-card__title">钻木取火</h3>
+        <p class="wx-card__desc">选干燥软木做火板，硬木做钻杆。双手搓动至冒烟，把火星落入火绒轻吹成苗。</p>
+      </article>
+
+      <article class="wx-card" id="water">
+        <span class="wx-card__num">02</span>
+        <span class="wx-card__icon"><i class="iconfont icon-jingshui"></i></span>
+        <h3 class="wx-card__title">寻找净水</h3>
+        <p class="wx-card__desc">优先取流动上游水。用布过滤后煮沸 3 分钟，或用太阳能蒸馏器收集凝结水。</p>
+      </article>
+
+      <article class="wx-card" id="shelter">
+        <span class="wx-card__num">03</span>
+        <span class="wx-card__icon"><i class="iconfont icon-biyou"></i></span>
+        <h3 class="wx-card__title">搭建庇护所</h3>
+        <p class="wx-card__desc">避开河谷与枯树下。用倒木做骨架，覆厚落叶与松枝，厚度至少 30 厘米才保暖。</p>
+      </article>
+
+      <article class="wx-card" id="aid">
+        <span class="wx-card__num">04</span>
+        <span class="wx-card__icon"><i class="iconfont icon-jijiu"></i></span>
+        <h3 class="wx-card__title">野外急救</h3>
+        <p class="wx-card__desc">止血用干净布料加压包扎。骨折就地取材做夹板固定，切勿强行复位。</p>
+      </article>
+
+    </section>
+
+    <!-- 生存要诀列表 -->
+    <h2 class="wx-section-title">生存要诀</h2>
+    <section class="wx-list">
+
+      <a class="wx-list__item" href="javascript:;">
+        <span class="wx-list__icon"><i class="iconfont icon-yingji"></i></span>
+        <div class="wx-list__body">
+          <h3>停止—思考—计划</h3>
+          <p>发现迷路立即停下，盲目赶路只会越走越远</p>
+        </div>
+        <span class="wx-list__arrow"><i class="iconfont icon-gengduo"></i></span>
+      </a>
+
+      <a class="wx-list__item" href="javascript:;">
+        <span class="wx-list__icon"><i class="iconfont icon-ditu"></i></span>
+        <div class="wx-list__body">
+          <h3>沿溪下行找人家</h3>
+          <p>顺着水流走，多半能遇到村庄或公路</p>
+        </div>
+        <span class="wx-list__arrow"><i class="iconfont icon-gengduo"></i></span>
+      </a>
+
+      <a class="wx-list__item" href="javascript:;">
+        <span class="wx-list__icon"><i class="iconfont icon-dianhua"></i></span>
+        <div class="wx-list__body">
+          <h3>三短三长三短求救</h3>
+          <p>国际通用 SOS 信号，可用哨子、灯光或石块敲击</p>
+        </div>
+        <span class="wx-list__arrow"><i class="iconfont icon-gengduo"></i></span>
+      </a>
+
+      <a class="wx-list__item" href="javascript:;">
+        <span class="wx-list__icon"><i class="iconfont icon-shoucang"></i></span>
+        <div class="wx-list__body">
+          <h3>出发前留行程单</h3>
+          <p>告知家人路线与返回时间，是最高效的自救</p>
+        </div>
+        <span class="wx-list__arrow"><i class="iconfont icon-gengduo"></i></span>
+      </a>
+
+    </section>
+
+    <!-- 警示条 -->
+    <aside class="wx-alert">
+      <i class="iconfont icon-yingji"></i>
+      <span><strong>安全提示：</strong>本页内容仅供科普学习。真实野外环境复杂，请勿在无专业人员陪同下尝试高风险技能，遇险请第一时间拨打 110 / 119。</span>
+    </aside>
+
+    <!-- 页脚 -->
+    <footer class="wx-footer">
+      <div class="wx-footer__line"></div>
+      野生存 · 荒野求生科普<br>
+      高级网页设计 I &nbsp;|&nbsp; 图像解决方案实验作品
+    </footer>
+
+  </main>
+
+  <!-- ==================== 下导航（字体图标方案） ==================== -->
+  <nav class="wx-tabbar">
+    <a href="javascript:;" class="wx-tabbar__item is-active">
+      <span class="wx-tabbar__icon-wrap">
+        <i class="iconfont icon-yingji wx-tabbar__icon"></i>
+      </span>
+      <span class="wx-tabbar__text">应急</span>
+    </a>
+
+    <a href="javascript:;" class="wx-tabbar__item">
+      <span class="wx-tabbar__icon-wrap">
+        <i class="iconfont icon-jingshui wx-tabbar__icon"></i>
+      </span>
+      <span class="wx-tabbar__text">净水</span>
+    </a>
+
+    <a href="javascript:;" class="wx-tabbar__item">
+      <span class="wx-tabbar__icon-wrap">
+        <i class="iconfont icon-quhuo wx-tabbar__icon"></i>
+        <span class="wx-tabbar__dot"></span>
+      </span>
+      <span class="wx-tabbar__text">取火</span>
+    </a>
+
+    <a href="javascript:;" class="wx-tabbar__item">
+      <span class="wx-tabbar__icon-wrap">
+        <i class="iconfont icon-biyou wx-tabbar__icon"></i>
+        <span class="wx-tabbar__badge">3</span>
+      </span>
+      <span class="wx-tabbar__text">庇护</span>
+    </a>
+
+    <a href="javascript:;" class="wx-tabbar__item">
+      <span class="wx-tabbar__icon-wrap">
+        <i class="iconfont icon-shouye wx-tabbar__icon"></i>
+      </span>
+      <span class="wx-tabbar__text">首页</span>
+    </a>
+  </nav>
+
+  <!-- ==================== 交互脚本 ==================== -->
+  <script>
+    (function () {
+      /* 1. 点击下导航切换选中态 */
+      var items = document.querySelectorAll('.wx-tabbar__item');
+      items.forEach(function (item) {
+        item.addEventListener('click', function (e) {
+          e.preventDefault();                       // 演示用，阻止跳转
+          items.forEach(function (el) { el.classList.remove('is-active'); });
+          item.classList.add('is-active');
+        });
+      });
+
+      /* 2. 快捷入口平滑滚动到对应卡片 */
+      document.querySelectorAll('.wx-quick__item').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+          var id = link.getAttribute('href');
+          var target = document.querySelector(id);
+          if (!target) return;
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          /* 滚动后给卡片一个短暂高亮，帮助定位 */
+          target.style.transition = 'box-shadow .3s';
+          target.style.boxShadow = '0 0 0 3px rgba(255,140,26,.45)';
+          setTimeout(function () {
+            target.style.boxShadow = '';
+          }, 900);
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>

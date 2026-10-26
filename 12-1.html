@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS 变量（自定义属性）- 杨长鉷</title>
+    <style>
+        /* ===== 1. 在 :root 上声明全局 CSS 变量 ===== */
+        :root {
+            --wang_primary: #667eea;
+            --wang_accent: #f093fb;
+            --wang_bg: #f8f9ff;
+            --wang_card: #ffffff;
+            --wang_text: #2d3748;
+            --wang_radius: 12px;
+            --wang_gap: 20px;
+            --wang_shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+        }
+
+        /* 通过切换 data-theme 覆盖变量，实现换肤 */
+        body[data-theme="dark"] {
+            --wang_bg: #0f0f23;
+            --wang_card: #1a1a3e;
+            --wang_text: #e2e8f0;
+            --wang_primary: #818cf8;
+            --wang_accent: #c084fc;
+            --wang_shadow: 0 4px 24px rgba(129, 140, 248, 0.25);
+        }
+        body[data-theme="green"] {
+            --wang_bg: #ecfdf5;
+            --wang_card: #ffffff;
+            --wang_text: #065f46;
+            --wang_primary: #10b981;
+            --wang_accent: #06b6d4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        /* 2. 元素只需引用变量，实现统一样式 */
+        body {
+            background: var(--wang_bg);
+            color: var(--wang_text);
+            line-height: 1.7;
+            padding: 40px 20px;
+            transition: background 0.4s, color 0.4s;
+        }
+        .wang_container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .wang_header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .wang_header h1 {
+            color: var(--wang_primary);
+            font-size: 32px;
+        }
+        .wang_header p {
+            opacity: 0.75;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .wang_card {
+            background: var(--wang_card);
+            border-radius: var(--wang_radius);
+            box-shadow: var(--wang_shadow);
+            padding: 28px;
+            margin-bottom: var(--wang_gap);
+            transition: background 0.4s, border-radius 0.3s;
+        }
+        .wang_card h2 {
+            color: var(--wang_primary);
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+        .wang_card p {
+            margin-bottom: 12px;
+        }
+        code {
+            background: rgba(127, 127, 127, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+        }
+
+        /* 3. 按钮用变量控制颜色与圆角 */
+        .wang_btn {
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            padding: 10px 22px;
+            margin: 4px 6px 4px 0;
+            border-radius: var(--wang_radius);
+            background: var(--wang_primary);
+            color: #fff;
+            font-size: 15px;
+            transition: transform 0.2s, background 0.3s;
+        }
+        .wang_btn:hover {
+            transform: translateY(-2px);
+        }
+        .wang_btn_accent {
+            background: var(--wang_accent);
+        }
+
+        /* 4. 用变量驱动的色板 */
+        .wang_swatches {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .wang_swatch {
+            width: 120px;
+            height: 80px;
+            border-radius: var(--wang_radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 13px;
+        }
+        .wang_swatch_primary { background: var(--wang_primary); }
+        .wang_swatch_accent  { background: var(--wang_accent); }
+
+        /* 5. var() 回退值：未定义时使用第二个参数 */
+        .wang_fallback {
+            background: var(--wang_not_defined, #9b59b6);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: var(--wang_radius);
+            display: inline-block;
+        }
+
+        /* 6. 受变量控制大小的方块 */
+        .wang_box {
+            width: var(--wang_box_size, 80px);
+            height: var(--wang_box_size, 80px);
+            line-height: var(--wang_box_size, 80px);
+            background: var(--wang_primary);
+            color: #fff;
+            border-radius: var(--wang_radius);
+            text-align: center;
+            font-weight: bold;
+            transition: width 0.2s, height 0.2s, line-height 0.2s;
+        }
+        .wang_range {
+            width: 240px;
+            vertical-align: middle;
+            margin-left: 12px;
+        }
+
+        .wang_footer {
+            text-align: center;
+            opacity: 0.6;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="wang_container">
+        <header class="wang_header">
+            <h1>CSS 变量（自定义属性）</h1>
+            <p>杨长鉷 · 使用 :root / var() 定义并复用样式</p>
+        </header>
+
+        <section class="wang_card">
+            <h2>1. 声明与使用</h2>
+            <p>在 <code>:root</code> 上用 <code>--wang_primary</code> 等自定义属性声明变量，元素通过 <code>var(--wang_primary)</code> 引用。</p>
+            <div class="wang_swatches">
+                <div class="wang_swatch wang_swatch_primary">--wang_primary</div>
+                <div class="wang_swatch wang_swatch_accent">--wang_accent</div>
+            </div>
+        </section>
+
+        <section class="wang_card">
+            <h2>2. 一键换肤</h2>
+            <p>切换 <code>body</code> 的 <code>data-theme</code>，覆盖变量即可整体换色。</p>
+            <button class="wang_btn" id="wang_theme_light">浅色主题</button>
+            <button class="wang_btn" id="wang_theme_dark">深色主题</button>
+            <button class="wang_btn wang_btn_accent" id="wang_theme_green">绿色主题</button>
+        </section>
+
+        <section class="wang_card">
+            <h2>3. 回退值</h2>
+            <p><code>var(--wang_not_defined, #9b59b6)</code>：变量未定义时使用逗号后的回退值。</p>
+            <span class="wang_fallback">我使用了未定义变量的回退颜色</span>
+        </section>
+
+        <section class="wang_card">
+            <h2>4. 运行时用 JS 改变变量</h2>
+            <p>拖动滑块，通过 JS 修改 <code>--wang_box_size</code>，方块实时变化。</p>
+            <div class="wang_box" id="wang_box">80</div>
+            <p style="margin-top:16px;">
+                尺寸：<input type="range" min="40" max="160" value="80" class="wang_range" id="wang_size_range">
+            </p>
+        </section>
+
+        <footer class="wang_footer">
+            <p>&copy; 2026 杨长鉷 · 高级网页设计课堂实践</p>
+        </footer>
+    </div>
+
+    <script>
+        var wang_body = document.body;
+
+        document.getElementById('wang_theme_light').addEventListener('click', function () {
+            wang_body.setAttribute('data-theme', 'light');
+        });
+        document.getElementById('wang_theme_dark').addEventListener('click', function () {
+            wang_body.setAttribute('data-theme', 'dark');
+        });
+        document.getElementById('wang_theme_green').addEventListener('click', function () {
+            wang_body.setAttribute('data-theme', 'green');
+        });
+
+        var wang_box = document.getElementById('wang_box');
+        var wang_range = document.getElementById('wang_size_range');
+        wang_range.addEventListener('input', function () {
+            var wang_size = wang_range.value;
+            wang_box.style.setProperty('--wang_box_size', wang_size + 'px');
+            wang_box.textContent = wang_size;
+        });
+    </script>
+</body>
+</html>

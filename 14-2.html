@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>14-2 JavaScript 6种基础数据类型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .type-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .type-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .type-card h2 {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .type-badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #68d391;
+        }
+
+        .code-keyword {
+            color: #f687b3;
+        }
+
+        .code-string {
+            color: #68d391;
+        }
+
+        .code-number {
+            color: #f6ad55;
+        }
+
+        .code-boolean {
+            color: #fc8181;
+        }
+
+        .code-null {
+            color: #90cdf4;
+        }
+
+        .output {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 3px solid #48bb78;
+        }
+
+        .output-title {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .output-content {
+            font-family: 'Consolas', monospace;
+            color: #4a5568;
+            line-height: 1.8;
+        }
+
+        .description {
+            color: #4a5568;
+            line-height: 1.8;
+            margin-top: 15px;
+        }
+
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .summary h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-item strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>JavaScript 基础数据类型</h1>
+            <p>6种原始数据类型详解与演示</p>
+        </div>
+
+        <div class="content">
+            <!-- 1. String 类型 -->
+            <div class="type-card">
+                <h2>1. String（字符串）<span class="type-badge">文本类型</span></h2>
+                <p class="description">用于表示文本数据，可以使用单引号、双引号或反引号包裹</p>
+                <div class="code-block">
+<span class="code-comment">// 字符串的多种定义方式</span>
+<span class="code-keyword">let</span> str1 = <span class="code-string">'Hello World'</span>;          <span class="code-comment">// 单引号</span>
+<span class="code-keyword">let</span> str2 = <span class="code-string">"JavaScript"</span>;           <span class="code-comment">// 双引号</span>
+<span class="code-keyword">let</span> str3 = <span class="code-string">`模板字符串`</span>;         <span class="code-comment">// 反引号 (ES6)</span>
+<span class="code-keyword">let</span> str4 = <span class="code-string">''</span>;                       <span class="code-comment">// 空字符串</span>
+<span class="code-keyword">let</span> str5 = <span class="code-string">'123'</span>;                   <span class="code-comment">// 数字字符串</span>
+
+console.log(<span class="code-keyword">typeof</span> str1);  <span class="code-comment">// 输出: string</span>
+console.log(str1.length); <span class="code-comment">// 输出: 11 (字符串长度)</span>
+                </div>
+                <div class="output">
+                    <div class="output-title">输出结果：</div>
+                    <div class="output-content" id="string-output"></div>
+                </div>
+            </div>
+
+            <!-- 2. Number 类型 -->
+            <div class="type-card">
+                <h2>2. Number（数字）<span class="type-badge">数值类型</span></h2>
+                <p class="description">用于表示整数和浮点数，还包括特殊值：Infinity、-Infinity、NaN</p>
+                <div class="code-block">
+<span class="code-comment">// 数字的多种形式</span>
+<span class="code-keyword">let</span> num1 = <span class="code-number">42</span>;              <span class="code-comment">// 整数</span>
+<span class="code-keyword">let</span> num2 = <span class="code-number">3.14</span>;            <span class="code-comment">// 浮点数</span>
+<span class="code-keyword">let</span> num3 = <span class="code-number">0xff</span>;             <span class="code-comment">// 十六进制</span>
+<span class="code-keyword">let</span> num4 = <span class="code-number">Infinity</span>;        <span class="code-comment">// 正无穷大</span>
+<span class="code-keyword">let</span> num5 = <span class="code-number">NaN</span>;             <span class="code-comment">// Not a Number (非数字)</span>
+
+console.log(<span class="code-keyword">typeof</span> num1);   <span class="code-comment">// 输出: number</span>
+console.log(<span class="code-number">10</span> / <span class="code-number">0</span>);      <span class="code-comment">// 输出: Infinity</span>
+console.log(<span class="code-string">'abc'</span> * <span class="code-number">2</span>);   <span class="code-comment">// 输出: NaN</span>
+                </div>
+                <div class="output">
+                    <div class="output-title">输出结果：</div>
+                    <div class="output-content" id="number-output"></div>
+                </div>
+            </div>
+
+            <!-- 3. Boolean 类型 -->
+            <div class="type-card">
+                <h2>3. Boolean（布尔值）<span class="type-badge">逻辑类型</span></h2>
+                <p class="description">只有两个值：true（真）和 false（假），常用于条件判断</p>
+                <div class="code-block">
+<span class="code-comment">// 布尔值的定义与使用</span>
+<span class="code-keyword">let</span> isTrue = <span class="code-boolean">true</span>;
+<span class="code-keyword">let</span> isFalse = <span class="code-boolean">false</span>;
+<span class="code-keyword">let</span> isEmpty = <span class="code-boolean">false</span>;
+<span class="code-keyword">let</span> isValid = <span class="code-boolean">true</span>;
+
+console.log(<span class="code-keyword">typeof</span> isTrue);     <span class="code-comment">// 输出: boolean</span>
+console.log(<span class="code-number">5</span> > <span class="code-number">3</span>);           <span class="code-comment">// 输出: true</span>
+console.log(<span class="code-number">10</span> === <span class="code-string">'10'</span>);     <span class="code-comment">// 输出: false (严格相等)</span>
+                </div>
+                <div class="output">
+                    <div class="output-title">输出结果：</div>
+                    <div class="output-content" id="boolean-output"></div>
+                </div>
+            </div>
+
+            <!-- 4. Undefined 类型 -->
+            <div class="type-card">
+                <h2>4. Undefined（未定义）<span class="type-badge">缺失类型</span></h2>
+                <p class="description">变量已声明但未赋值时的默认值，表示"缺少值"</p>
+                <div class="code-block">
+<span class="code-comment">// Undefined 的使用场景</span>
+<span class="code-keyword">let</span> undefinedVar;               <span class="code-comment">// 声明但未赋值</span>
+<span class="code-keyword">let</span> explicitUndefined = <span class="code-keyword">undefined</span>;  <span class="code-comment">// 显式赋值为undefined</span>
+
+console.log(<span class="code-keyword">typeof</span> undefinedVar);       <span class="code-comment">// 输出: "undefined"</span>
+console.log(undefinedVar);              <span class="code-comment">// 输出: undefined</span>
+console.log(undefinedVar === <span class="code-keyword">undefined</span>); <span class="code-comment">// 输出: true</span>
+                </div>
+                <div class="output">
+                    <div class="output-title">输出结果：</div>
+                    <div class="output-content" id="undefined-output"></div>
+                </div>
+            </div>
+
+            <!-- 5. Null 类型 -->
+            <div class="type-card">
+                <h2>5. Null（空值）<span class="type-badge">空对象类型</span></h2>
+                <p class="description">表示"无"、"空"或"未知"的特殊值，表示有意设置为空</p>
+                <div class="code-block">
+<span class="code-comment">// Null 的使用场景</span>
+<span class="code-keyword">let</span> emptyValue = <span class="code-null">null</span>;
+<span class="code-keyword">let</span> noData = <span class="code-null">null</span>;
+<span class="code-keyword">let</span> objectNotFound = <span class="code-null">null</span>;
+
+console.log(<span class="code-keyword">typeof</span> emptyValue);      <span class="code-comment">// 输出: "object" (历史遗留问题)</span>
+console.log(emptyValue);             <span class="code-comment">// 输出: null</span>
+console.log(emptyValue === <span class="code-null">null</span>);    <span class="code-comment">// 输出: true</span>
+console.log(<span class="code-null">null</span> === <span class="code-keyword">undefined</span>);  <span class="code-comment">// 输出: false</span>
+                </div>
+                <div class="output">
+                    <div class="output-title">输出结果：</div>
+                    <div class="output-content" id="null-output"></div>
+                </div>
+            </div>
+
+            <!-- 6. Symbol 类型 -->
+            <div class="type-card">
+                <h2>6. Symbol（符号）<span class="type-badge">唯一标识符 (ES6)</span></h2>
+                <p class="description">ES6新增类型，表示唯一的、不可变的值，常用于对象属性标识符</p>
+                <div class="code-block">
+<span class="code-comment">// Symbol 的创建与使用</span>
+<span class="code-keyword">let</span> sym1 = Symbol(<span class="code-string">'description'</span>);
+<span class="code-keyword">let</span> sym2 = Symbol(<span class="code-string">'description'</span>);
+<span class="code-keyword">let</span> sym3 = Symbol();
+
+console.log(<span class="code-keyword">typeof</span> sym1);           <span class="code-comment">// 输出: "symbol"</span>
+console.log(sym1 === sym2);          <span class="code-comment">// 输出: false (每个Symbol都唯一)</span>
+console.log(sym1.toString());        <span class="code-comment">// 输出: Symbol(description)</span>
+
+<span class="code-comment">// Symbol 作为对象属性</span>
+<span class="code-keyword">let</span> obj = {
+    [sym1]: <span class="code-string">'Symbol属性值'</span>
+};
+console.log(obj[sym1]);              <span class="code-comment">// 输出: "Symbol属性值"</span>
+                </div>
+                <div class="output">
+                    <div class="output-title">输出结果：</div>
+                    <div class="output-content" id="symbol-output"></div>
+                </div>
+            </div>
+
+            <!-- 总结部分 -->
+            <div class="summary">
+                <h2>📊 JavaScript 6种基础数据类型总结</h2>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <strong>String</strong>
+                        <p>字符串</p>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Number</strong>
+                        <p>数字</p>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Boolean</strong>
+                        <p>布尔值</p>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Undefined</strong>
+                        <p>未定义</p>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Null</strong>
+                        <p>空值</p>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Symbol</strong>
+                        <p>符号 (ES6)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. String 类型演示
+        let str1 = 'Hello World';
+        let str2 = "JavaScript";
+        let str3 = `模板字符串`;
+        let str4 = '';
+        let str5 = '123';
+
+        document.getElementById('string-output').innerHTML = 
+            `typeof str1 = ${typeof str1}<br>` +
+            `str1 = "${str1}"<br>` +
+            `str1.length = ${str1.length}<br>` +
+            `str2 = "${str2}"<br>` +
+            `str3 = \`${str3}\`<br>` +
+            `str4 (空字符串) = "${str4}"<br>` +
+            `str5 (数字字符串) = "${str5}"`;
+
+        // 2. Number 类型演示
+        let num1 = 42;
+        let num2 = 3.14;
+        let num3 = 0xff;
+        let num4 = Infinity;
+        let num5 = NaN;
+
+        document.getElementById('number-output').innerHTML = 
+            `typeof num1 = ${typeof num1}<br>` +
+            `num1 (整数) = ${num1}<br>` +
+            `num2 (浮点数) = ${num2}<br>` +
+            `num3 (十六进制 0xff) = ${num3}<br>` +
+            `num4 (Infinity) = ${num4}<br>` +
+            `num5 (NaN) = ${num5}<br>` +
+            `10 / 0 = ${10/0}<br>` +
+            `'abc' * 2 = ${'abc'*2}`;
+
+        // 3. Boolean 类型演示
+        let isTrue = true;
+        let isFalse = false;
+        let isEmpty = false;
+        let isValid = true;
+
+        document.getElementById('boolean-output').innerHTML = 
+            `typeof isTrue = ${typeof isTrue}<br>` +
+            `isTrue = ${isTrue}<br>` +
+            `isFalse = ${isFalse}<br>` +
+            `5 > 3 = ${5 > 3}<br>` +
+            `10 === '10' = ${10 === '10'}<br>` +
+            `!!'hello' = ${!!'hello'} (真值)<br>` +
+            `!!'' = ${!!''} (假值)`;
+
+        // 4. Undefined 类型演示
+        let undefinedVar;
+        let explicitUndefined = undefined;
+
+        document.getElementById('undefined-output').innerHTML = 
+            `typeof undefinedVar = ${typeof undefinedVar}<br>` +
+            `undefinedVar = ${undefinedVar}<br>` +
+            `undefinedVar === undefined = ${undefinedVar === undefined}<br>` +
+            `explicitUndefined = ${explicitUndefined}<br>` +
+            `注意: 变量声明但未赋值时默认为 undefined`;
+
+        // 5. Null 类型演示
+        let emptyValue = null;
+        let noData = null;
+        let objectNotFound = null;
+
+        document.getElementById('null-output').innerHTML = 
+            `typeof emptyValue = ${typeof emptyValue} (历史遗留bug)<br>` +
+            `emptyValue = ${emptyValue}<br>` +
+            `emptyValue === null = ${emptyValue === null}<br>` +
+            `null === undefined = ${null === undefined}<br>` +
+            `null == null = ${null == null}<br>` +
+            `注意: null 表示"无值"，需要主动赋值`;
+
+        // 6. Symbol 类型演示
+        let sym1 = Symbol('description');
+        let sym2 = Symbol('description');
+        let sym3 = Symbol();
+
+        let obj = {
+            [sym1]: 'Symbol属性值'
+        };
+
+        document.getElementById('symbol-output').innerHTML = 
+            `typeof sym1 = ${typeof sym1}<br>` +
+            `sym1 = ${sym1.toString()}<br>` +
+            `sym2 = ${sym2.toString()}<br>` +
+            `sym1 === sym2 = ${sym1 === sym2} (即使描述相同也不等)<br>` +
+            `sym3 (无描述) = ${sym3.toString()}<br>` +
+            `obj[sym1] = ${obj[sym1]}<br>` +
+            `注意: 每个Symbol都是唯一的，不能被复制`;
+    </script>
+</body>
+</html>

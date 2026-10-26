@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>野生存 · SVG 下导航对照方案</title>
+
+  <!-- 注意：本页下导航【不依赖字体文件】，纯内联 SVG。 -->
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --wx-deep:   #1b2b1f;
+      --wx-moss:   #8fa698;
+      --wx-orange: #ff8c1a;
+      --wx-ink:    #253228;
+      --wx-gray:   #7b857e;
+    }
+
+    body {
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--wx-ink);
+      background: #f7f5f0;
+      line-height: 1.7;
+      max-width: 750px;
+      margin: 0 auto;
+      min-height: 100vh;
+      /* 为固定底部导航留出空间（SVG 版高度略大） */
+      padding-bottom: calc(66px + env(safe-area-inset-bottom));
+    }
+
+    /* ================= 页面头部说明 ================= */
+    .wx-head {
+      padding: 20px 16px 16px;
+      background: linear-gradient(160deg, #2f4a37, #1b2b1f);
+      color: #fff;
+    }
+    .wx-head h1 { font-size: 18px; letter-spacing: .5px; margin-bottom: 6px; }
+    .wx-head p  { font-size: 12px; line-height: 1.8; color: rgba(255,255,255,.72); }
+    .wx-head code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(255,255,255,.12);
+      font-family: Consolas, monospace;
+      font-size: 11px;
+      color: #ffb066;
+    }
+
+    /* ================= 对照说明区 ================= */
+    .wx-body { padding: 14px; }
+
+    .wx-note {
+      padding: 14px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(37,50,40,.06);
+    }
+    .wx-note h2 {
+      font-size: 13.5px;
+      margin-bottom: 8px;
+      padding-left: 8px;
+      border-left: 3px solid var(--wx-orange);
+    }
+    .wx-note ul { list-style: none; }
+    .wx-note li {
+      position: relative;
+      padding-left: 14px;
+      font-size: 12px;
+      line-height: 1.85;
+      color: var(--wx-gray);
+    }
+    .wx-note li::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: 10px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #c9d6cc;
+    }
+    .wx-note li b { color: var(--wx-ink); }
+
+    /* ================= 下导航（SVG 方案） ================= */
+    .wx-svgtab {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+
+      display: flex;              /* 自适应宽度：等分 */
+      width: 100%;
+      max-width: 750px;
+      margin: 0 auto;
+
+      background: var(--wx-deep);
+      border-top: 1px solid #2c4534;
+      padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 -3px 16px rgba(0,0,0,.22);
+    }
+
+    .wx-svgtab__item {
+      flex: 1 1 0;
+      min-width: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 9px 0 7px;
+      color: var(--wx-moss);
+      font-size: 10.5px;
+      transition: color .2s;
+    }
+
+    /* ----- 关键：SVG 图标样式 -----
+       width/height 用 em 单位 → 图标尺寸随 font-size 缩放，天生自适应
+       fill: currentColor       → 填充色继承父级 color，改文字颜色即改图标颜色 */
+    .wx-svgtab__icon {
+      width: 1.5em;
+      height: 1.5em;
+      font-size: 15px;          /* 只改这一处，5 个图标整体缩放 */
+      fill: currentColor;
+      color: var(--wx-moss);
+      transition: color .2s, transform .2s;
+    }
+
+    /* 选中态 */
+    .wx-svgtab__item.is-active { color: var(--wx-orange); }
+    .wx-svgtab__item.is-active .wx-svgtab__icon { color: var(--wx-orange); }
+
+    /* 选中项顶部指示条 */
+    .wx-svgtab__item.is-active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 2px;
+      border-radius: 0 0 2px 2px;
+      background: var(--wx-orange);
+    }
+
+    /* 悬浮：图标轻微上浮（SVG 可直接做形变动画） */
+    .wx-svgtab__item:hover .wx-svgtab__icon { color: #cfe0d5; transform: translateY(-2px); }
+    .wx-svgtab__item.is-active:hover .wx-svgtab__icon { color: var(--wx-orange); }
+
+    /* 点按 */
+    .wx-svgtab__item:active .wx-svgtab__icon { transform: scale(.88); }
+
+    /* SVG 图标上的红点：用 circle 直接画在 SVG 内（对比字体图标需要额外 span） */
+    .wx-svgtab__badge-dot { fill: #e85d2a; }
+
+    /* 小屏适配 */
+    @media (max-width: 359px) {
+      .wx-svgtab__icon { font-size: 14px; }
+      .wx-svgtab__item { padding: 7px 0 5px; font-size: 10px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="wx-head">
+    <h1>SVG 下导航 · 对照方案</h1>
+    <p>
+      本页下导航使用<strong>内联 SVG</strong> 绘制图标，不依赖任何字体文件。
+      与字体图标方案相比：图标为矢量路径，可用 <code>fill:currentColor</code> 继承颜色、
+      用 <code>width:1.5em</code> 随字号缩放，且不会出现字体加载失败时的“方块”。
+    </p>
+  </header>
+
+  <div class="wx-body">
+
+    <section class="wx-note">
+      <h2>两种方案对比</h2>
+      <ul>
+        <li><b>字体图标：</b>写法最简，一个 class 即可；但只能整体改色，依赖字体文件加载。</li>
+        <li><b>内联 SVG：</b>可精细控制每个图形路径，支持多色、描边与形变动画；代码量稍大，但零外部依赖。</li>
+        <li><b>本项目选择：</b>下导航主方案用字体图标（复用率高、代码简洁），另用本页 SVG 方案作技术对照，满足“两种技术有区别”的要求。</li>
+      </ul>
+    </section>
+
+    <section class="wx-note">
+      <h2>自适应宽度实现要点</h2>
+      <ul>
+        <li>容器 <b>display:flex</b>，子项 <b>flex:1 1 0</b> → 5 项永远等分，无需媒体查询。</li>
+        <li>子项 <b>min-width:0</b> → 防止内容撑破等分。</li>
+        <li>图标 <b>width:1.5em; font-size:15px</b> → 改字号即改图标大小，缩放不失真。</li>
+        <li><b>fill:currentColor</b> → 图标颜色跟随父级 color，选中态只需改一处。</li>
+        <li><b>padding-bottom: env(safe-area-inset-bottom)</b> → 适配 iPhone 全面屏底部安全区。</li>
+      </ul>
+    </section>
+
+  </div>
+
+  <!-- ================= 下导航（SVG） ================= -->
+  <nav class="wx-svgtab">
+
+    <!-- 应急：警示三角 + 感叹号 -->
+    <a href="javascript:;" class="wx-svgtab__item is-active">
+      <svg class="wx-svgtab__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2 1 21h22L12 2zm0 5.5 7.2 12.3H4.8L12 7.5zM11 10h2v5h-2v-5zm0 6h2v2h-2v-2z"/>
+      </svg>
+      <span>应急</span>
+    </a>
+
+    <!-- 净水：水滴 -->
+    <a href="javascript:;" class="wx-svgtab__item">
+      <svg class="wx-svgtab__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2.2S5.5 10 5.5 14.4A6.5 6.5 0 0 0 18.5 14.4C18.5 10 12 2.2 12 2.2zm0 16.3a4 4 0 0 1-4-4c0-.4.1-.9.2-1.3a5.6 5.6 0 0 0 3.3-3.1 5.6 5.6 0 0 0 1.6 2.5 4 4 0 0 1 2.9 3.9 4 4 0 0 1-4 4z"/>
+      </svg>
+      <span>净水</span>
+    </a>
+
+    <!-- 取火：火焰 + 红点（SVG 内直接画 circle，无需额外元素） -->
+    <a href="javascript:;" class="wx-svgtab__item">
+      <svg class="wx-svgtab__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M13.4 1.8s.9 3.2-1.6 5.9c-2.1 2.3-4.3 3.4-4.3 6.8a6.5 6.5 0 0 0 13 0c0-3.4-2.4-5.4-3.6-7.5-1-1.9-.7-4.2-3.5-5.2zm-1.6 18.4a3.3 3.3 0 0 1-3.3-3.3c0-1.7 1.2-2.6 2.3-3.8a5 5 0 0 0 1.2-2.4c1.5 1.2 3 2.8 3 5.2a3.4 3.4 0 0 1-3.2 4.3z"/>
+        <circle class="wx-svgtab__badge-dot" cx="19.5" cy="5" r="3"/>
+      </svg>
+      <span>取火</span>
+    </a>
+
+    <!-- 庇护：帐篷 -->
+    <a href="javascript:;" class="wx-svgtab__item">
+      <svg class="wx-svgtab__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3 2 21h20L12 3zm0 4.6 6.6 11.4h-3.3L12 13.5 8.7 19H5.4L12 7.6z"/>
+      </svg>
+      <span>庇护</span>
+    </a>
+
+    <!-- 首页：小屋 -->
+    <a href="javascript:;" class="wx-svgtab__item">
+      <svg class="wx-svgtab__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3 2 11.5h3V21h5.5v-5.5h3V21H19v-9.5h3L12 3zm0 2.6 6 5.1V19h-1.5v-5.5h-9V19H6v-8.3l6-5.1z"/>
+      </svg>
+      <span>首页</span>
+    </a>
+
+  </nav>
+
+  <script>
+    /* SVG 版点击切换选中态（与字体图标版逻辑一致） */
+    (function () {
+      var items = document.querySelectorAll('.wx-svgtab__item');
+      items.forEach(function (item) {
+        item.addEventListener('click', function (e) {
+          e.preventDefault();
+          items.forEach(function (el) { el.classList.remove('is-active'); });
+          item.classList.add('is-active');
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>

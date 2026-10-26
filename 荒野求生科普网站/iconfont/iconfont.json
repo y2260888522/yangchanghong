@@ -1,0 +1,93 @@
+{
+  "id": "5244969",
+  "name": "sjxm",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "903796",
+      "name": "huo",
+      "font_class": "quhuo",
+      "unicode": "e664",
+      "unicode_decimal": 58980
+    },
+    {
+      "icon_id": "1287717",
+      "name": "zhinan",
+      "font_class": "zhinanzhen",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "3762525",
+      "name": "ditu",
+      "font_class": "dingwei",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "5048216",
+      "name": "jingshui",
+      "font_class": "shui",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "5387535",
+      "name": "yingji",
+      "font_class": "jinggao",
+      "unicode": "eaf7",
+      "unicode_decimal": 60151
+    },
+    {
+      "icon_id": "5651343",
+      "name": "dianhua",
+      "font_class": "dianhua",
+      "unicode": "e657",
+      "unicode_decimal": 58967
+    },
+    {
+      "icon_id": "9906492",
+      "name": "sousuo",
+      "font_class": "sousuo",
+      "unicode": "e7a3",
+      "unicode_decimal": 59299
+    },
+    {
+      "icon_id": "17816853",
+      "name": "shouye",
+      "font_class": "shouye",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "21193300",
+      "name": "jijiu",
+      "font_class": "jijiu",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
+      "icon_id": "22122304",
+      "name": "gengduo",
+      "font_class": "gengduo_gengduo",
+      "unicode": "e673",
+      "unicode_decimal": 58995
+    },
+    {
+      "icon_id": "34997131",
+      "name": "biyou",
+      "font_class": "zhangpeng",
+      "unicode": "e67f",
+      "unicode_decimal": 59007
+    },
+    {
+      "icon_id": "37855392",
+      "name": "shoucang",
+      "font_class": "shoucang",
+      "unicode": "e682",
+      "unicode_decimal": 59010
+    }
+  ]
+}
