@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>17-5 JavaScript 两种定时器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .header p {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    .content {
+      padding: 30px;
+    }
+    .card {
+      background: #f8f9fa;
+      border-left: 5px solid #667eea;
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+    .card h2 {
+      color: #667eea;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      background: #667eea;
+      color: #fff;
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-size: 0.78rem;
+      font-weight: normal;
+    }
+    .badge.green {
+      background: #38a169;
+    }
+    .desc {
+      color: #718096;
+      font-size: 0.87rem;
+      line-height: 1.8;
+      margin-bottom: 14px;
+    }
+    .desc strong {
+      color: #2d3748;
+    }
+    pre {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 16px 18px;
+      border-radius: 10px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      margin-bottom: 18px;
+    }
+    .c-comment {
+      color: #68d391;
+    }
+    .c-key {
+      color: #f687b3;
+    }
+    .demo {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .ctrl-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .ctrl-row label {
+      font-size: 0.87rem;
+      color: #4a5568;
+    }
+    input[type="number"] {
+      width: 100px;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e0;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: #2d3748;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input[type="number"]:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    }
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(102, 126, 234, 0.35);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .btn.ghost {
+      background: #edf2f7;
+      color: #4a5568;
+    }
+    .btn.ghost:hover {
+      box-shadow: 0 10px 22px rgba(74, 85, 104, 0.2);
+    }
+    .msg {
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: #edf2f7;
+      color: #4a5568;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      transition: background 0.3s, color 0.3s;
+    }
+    .msg.waiting {
+      background: #fffaf0;
+      color: #b7791f;
+      border-left: 4px solid #d69e2e;
+    }
+    .msg.done {
+      background: #f0fff4;
+      color: #276749;
+      border-left: 4px solid #38a169;
+    }
+    .msg.cancel {
+      background: #fff5f5;
+      color: #c53030;
+      border-left: 4px solid #e53e3e;
+    }
+    .clock {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 2.6rem;
+      font-weight: bold;
+      color: #667eea;
+      text-align: center;
+      letter-spacing: 3px;
+      padding: 18px 0;
+      background: #faf5ff;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      transition: color 0.3s;
+    }
+    .clock.running {
+      color: #38a169;
+    }
+    .run-info {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #718096;
+      margin-bottom: 16px;
+      font-family: 'Consolas', monospace;
+    }
+    .compare {
+      background: #faf5ff;
+      border: 1px solid #e9d8fd;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .compare h3 {
+      color: #6b46c1;
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+    }
+    .compare ul {
+      list-style: none;
+    }
+    .compare li {
+      color: #4a5568;
+      font-size: 0.87rem;
+      line-height: 1.9;
+      padding-left: 20px;
+      position: relative;
+    }
+    .compare li::before {
+      content: "•";
+      position: absolute;
+      left: 6px;
+      color: #6b46c1;
+      font-weight: bold;
+    }
+    .footer {
+      text-align: center;
+      color: #718096;
+      font-size: 0.9rem;
+      padding: 0 0 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>JavaScript 两种定时器</h1>
+      <p>setTimeout 延时执行一次　·　setInterval 每隔一段时间重复执行</p>
+    </div>
+    <div class="content">
+      <div class="card">
+        <h2>1. setTimeout<span class="badge">只执行一次</span></h2>
+        <p class="desc">语法：<strong>setTimeout(要执行的函数, 毫秒数)</strong>。它会在指定毫秒之后执行一次回调，返回一个定时器 ID；用 <strong>clearTimeout(ID)</strong> 可以在执行前取消它。</p>
+        <pre><span class="c-key">var</span> id = setTimeout(<span class="c-key">function</span> () {
+  console.log(<span class="c-comment">"3 秒到了，只执行这一次"</span>);
+}, 3000);
+
+<span class="c-comment">// 想取消就用 clearTimeout</span>
+clearTimeout(id);</pre>
+        <div class="demo">
+          <div class="ctrl-row">
+            <label>延时毫秒数：</label>
+            <input type="number" id="delayInput" value="3000" min="0" step="500">
+            <button class="btn" id="startTimeout">开始延时</button>
+            <button class="btn ghost" id="cancelTimeout">取消延时</button>
+          </div>
+          <div class="msg" id="timeoutMsg">尚未开始，点击「开始延时」体验一次延时执行</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2. setInterval<span class="badge green">重复执行</span></h2>
+        <p class="desc">语法：<strong>setInterval(要执行的函数, 间隔毫秒数)</strong>。它会每隔指定毫秒执行一次回调，同样返回一个定时器 ID；用 <strong>clearInterval(ID)</strong> 停止它。下面是一个每秒走一格的计时器。</p>
+        <pre><span class="c-key">var</span> id = setInterval(<span class="c-key">function</span> () {
+  seconds++;              <span class="c-comment">// 每 1000 毫秒执行一次</span>
+  render();
+}, 1000);
+
+<span class="c-comment">// 想停止就用 clearInterval</span>
+clearInterval(id);</pre>
+        <div class="demo">
+          <div class="clock" id="clock">00:00:00</div>
+          <p class="run-info" id="runInfo">状态：未开始　·　定时器 ID：无</p>
+          <div class="ctrl-row">
+            <button class="btn" id="startInterval">开始计时</button>
+            <button class="btn ghost" id="pauseInterval">暂停计时</button>
+            <button class="btn ghost" id="resetInterval">重置</button>
+          </div>
+          <div class="msg" id="intervalMsg">每秒执行一次回调，累计计时并刷新上方显示</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="compare">
+          <h3>两种定时器对比</h3>
+          <ul>
+            <li>setTimeout：延时到点后<strong>只执行一次</strong>，适合做延迟操作、提示自动消失</li>
+            <li>setInterval：按固定间隔<strong>一直重复执行</strong>，适合做时钟、轮播图、数据轮询</li>
+            <li>两者都返回定时器 ID（浏览器中为数字），必须用对应的 clearTimeout / clearInterval 清除</li>
+            <li>间隔时间单位都是毫秒（ms），1000 毫秒 = 1 秒；实际触发时间会有轻微误差</li>
+            <li>页面关闭或刷新时，所有定时器自动失效</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="footer">杨长鉷 · 高级网页设计 · 17-5</p>
+  </div>
+
+  <script>
+    var delayInput = document.getElementById("delayInput");
+    var startTimeoutBtn = document.getElementById("startTimeout");
+    var cancelTimeoutBtn = document.getElementById("cancelTimeout");
+    var timeoutMsg = document.getElementById("timeoutMsg");
+
+    var timeoutId = null;
+
+    function nowText() {
+      var d = new Date();
+      function pad(n) {
+        return n < 10 ? "0" + n : "" + n;
+      }
+      return pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+    }
+
+    function setTimeoutMsg(text, type) {
+      timeoutMsg.textContent = text;
+      timeoutMsg.className = "msg" + (type ? " " + type : "");
+    }
+
+    startTimeoutBtn.addEventListener("click", function () {
+      var delay = Number(delayInput.value);
+      if (isNaN(delay) || delay < 0) {
+        setTimeoutMsg("请输入大于等于 0 的毫秒数", "cancel");
+        return;
+      }
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+
+      timeoutId = setTimeout(function () {
+        var idBeforeClear = timeoutId;
+        timeoutId = null;
+        startTimeoutBtn.disabled = false;
+        cancelTimeoutBtn.disabled = true;
+        setTimeoutMsg(
+          "✅ 已执行！延时 " + delay + " 毫秒后触发了这一次回调，触发时刻 " + nowText() +
+          "（执行后定时器 ID " + idBeforeClear + " 已失效）",
+          "done"
+        );
+      }, delay);
+
+      setTimeoutMsg("已开始，将在 " + delay + " 毫秒后执行一次（定时器 ID：" + timeoutId + "）", "waiting");
+      startTimeoutBtn.disabled = true;
+      cancelTimeoutBtn.disabled = false;
+    });
+
+    cancelTimeoutBtn.addEventListener("click", function () {
+      if (timeoutId === null) {
+        setTimeoutMsg("当前没有等待中的定时器，无需取消", "cancel");
+        return;
+      }
+      var idBeforeClear = timeoutId;
+      clearTimeout(timeoutId);
+      timeoutId = null;
+      startTimeoutBtn.disabled = false;
+      cancelTimeoutBtn.disabled = true;
+      setTimeoutMsg("已用 clearTimeout(" + idBeforeClear + ") 取消，回调不会执行了", "cancel");
+    });
+
+    cancelTimeoutBtn.disabled = true;
+
+    var clockEl = document.getElementById("clock");
+    var runInfo = document.getElementById("runInfo");
+    var intervalMsg = document.getElementById("intervalMsg");
+    var startIntervalBtn = document.getElementById("startInterval");
+    var pauseIntervalBtn = document.getElementById("pauseInterval");
+    var resetIntervalBtn = document.getElementById("resetInterval");
+
+    var intervalId = null;
+    var seconds = 0;
+    var ticks = 0;
+
+    function pad2(n) {
+      return n < 10 ? "0" + n : "" + n;
+    }
+
+    function formatClock(total) {
+      var h = Math.floor(total / 3600);
+      var m = Math.floor((total % 3600) / 60);
+      var s = total % 60;
+      return pad2(h) + ":" + pad2(m) + ":" + pad2(s);
+    }
+
+    function renderClock() {
+      clockEl.textContent = formatClock(seconds);
+      if (intervalId !== null) {
+        clockEl.className = "clock running";
+        runInfo.textContent = "状态：运行中　·　定时器 ID：" + intervalId + "　·　已执行 " + ticks + " 次回调";
+      } else {
+        clockEl.className = "clock";
+        runInfo.textContent = "状态：" + (seconds > 0 ? "已暂停" : "未开始") + "　·　定时器 ID：无　·　已执行 " + ticks + " 次回调";
+      }
+    }
+
+    startIntervalBtn.addEventListener("click", function () {
+      if (intervalId !== null) {
+        intervalMsg.textContent = "计时器已在运行，无需重复启动";
+        intervalMsg.className = "msg waiting";
+        return;
+      }
+
+      intervalId = setInterval(function () {
+        seconds++;
+        ticks++;
+        renderClock();
+      }, 1000);
+
+      intervalMsg.textContent = "已启动 setInterval，每 1000 毫秒执行一次回调（ID：" + intervalId + "）";
+      intervalMsg.className = "msg done";
+      startIntervalBtn.disabled = true;
+      pauseIntervalBtn.disabled = false;
+      renderClock();
+    });
+
+    pauseIntervalBtn.addEventListener("click", function () {
+      if (intervalId === null) {
+        intervalMsg.textContent = "当前没有运行中的计时器";
+        intervalMsg.className = "msg cancel";
+        return;
+      }
+      var idBeforeClear = intervalId;
+      clearInterval(intervalId);
+      intervalId = null;
+      intervalMsg.textContent = "已用 clearInterval(" + idBeforeClear + ") 暂停，再次点击「开始计时」可继续累加";
+      intervalMsg.className = "msg waiting";
+      startIntervalBtn.disabled = false;
+      pauseIntervalBtn.disabled = true;
+      renderClock();
+    });
+
+    resetIntervalBtn.addEventListener("click", function () {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+      seconds = 0;
+      ticks = 0;
+      intervalMsg.textContent = "已重置：计时归零，定时器已清除";
+      intervalMsg.className = "msg";
+      startIntervalBtn.disabled = false;
+      pauseIntervalBtn.disabled = true;
+      renderClock();
+    });
+
+    pauseIntervalBtn.disabled = true;
+    renderClock();
+  </script>
+</body>
+</html>

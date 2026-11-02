@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>17-4 远程数据接口测试</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .header p {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    .content {
+      padding: 30px;
+    }
+    .card {
+      background: #f8f9fa;
+      border-left: 5px solid #667eea;
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+    .card h2 {
+      color: #667eea;
+      font-size: 1.2rem;
+      margin-bottom: 6px;
+    }
+    .card .desc {
+      color: #718096;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .url-line {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    select,
+    input,
+    textarea {
+      font-family: inherit;
+      font-size: 0.95rem;
+      border: 1px solid #cbd5e0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #fff;
+      color: #2d3748;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    select:focus,
+    input:focus,
+    textarea:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    }
+    select {
+      flex: 0 0 130px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #667eea;
+    }
+    .url-line input {
+      flex: 1 1 320px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      margin-top: 12px;
+      resize: vertical;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(102, 126, 234, 0.35);
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .btn.ghost {
+      background: #edf2f7;
+      color: #4a5568;
+    }
+    .btn.ghost:hover {
+      box-shadow: 0 10px 24px rgba(74, 85, 104, 0.2);
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      align-items: center;
+    }
+    .examples {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px dashed #cbd5e0;
+    }
+    .examples-title {
+      font-size: 0.85rem;
+      color: #718096;
+      margin-bottom: 10px;
+    }
+    .examples button {
+      padding: 8px 16px;
+      margin: 0 8px 8px 0;
+      border: 1px solid #cbd5e0;
+      border-radius: 20px;
+      background: #fff;
+      color: #4a5568;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .examples button:hover {
+      border-color: #667eea;
+      color: #667eea;
+      background: #faf5ff;
+    }
+    .status-bar {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      background: #edf2f7;
+      color: #4a5568;
+      margin-bottom: 14px;
+    }
+    .status-bar.ok {
+      background: #f0fff4;
+      color: #276749;
+      border-left: 4px solid #38a169;
+    }
+    .status-bar.bad {
+      background: #fff5f5;
+      color: #c53030;
+      border-left: 4px solid #e53e3e;
+    }
+    .error-box {
+      display: none;
+      background: #fff5f5;
+      border: 1px solid #feb2b2;
+      border-left: 4px solid #e53e3e;
+      color: #c53030;
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+    .sub-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #2d3748;
+      margin: 18px 0 8px;
+    }
+    pre {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 18px;
+      border-radius: 10px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      max-height: 340px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .headers {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 6px 14px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #edf2f7;
+      font-size: 0.82rem;
+    }
+    .row:last-child {
+      border-bottom: none;
+    }
+    .row .key {
+      flex: 0 0 200px;
+      color: #667eea;
+      font-family: 'Consolas', monospace;
+    }
+    .row .value {
+      flex: 1;
+      color: #4a5568;
+      font-family: 'Consolas', monospace;
+      word-break: break-all;
+    }
+    .history {
+      list-style: none;
+    }
+    .history li {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 14px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      font-size: 0.82rem;
+      flex-wrap: wrap;
+    }
+    .method-tag {
+      flex: 0 0 auto;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.78rem;
+      color: #fff;
+      background: #667eea;
+    }
+    .method-tag.post {
+      background: #38a169;
+    }
+    .method-tag.put {
+      background: #b7791f;
+    }
+    .method-tag.patch {
+      background: #6b46c1;
+    }
+    .method-tag.delete {
+      background: #e53e3e;
+    }
+    .history .h-url {
+      flex: 1 1 260px;
+      color: #4a5568;
+      font-family: 'Consolas', monospace;
+      word-break: break-all;
+    }
+    .history .h-status {
+      flex: 0 0 auto;
+      font-family: 'Consolas', monospace;
+    }
+    .h-status.good {
+      color: #276749;
+    }
+    .h-status.bad {
+      color: #c53030;
+    }
+    .empty {
+      color: #a0aec0;
+      font-size: 0.85rem;
+    }
+    .footer {
+      text-align: center;
+      color: #718096;
+      font-size: 0.9rem;
+      padding: 0 0 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>远程数据接口测试工具</h1>
+      <p>支持 GET / POST / PUT / PATCH / DELETE，显示返回数据与错误提示</p>
+    </div>
+    <div class="content">
+      <div class="card">
+        <h2>1. 填写请求信息</h2>
+        <p class="desc">默认示例接口：https://jsonplaceholder.typicode.com/posts（免费、支持跨域）</p>
+        <div class="url-line">
+          <select id="method">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+          <input id="url" type="text" value="https://jsonplaceholder.typicode.com/posts?_limit=3">
+        </div>
+        <textarea id="body" spellcheck="false"></textarea>
+        <div class="btn-row">
+          <button class="btn" id="send">发送请求</button>
+          <button class="btn ghost" id="clear">清空结果</button>
+        </div>
+        <div class="examples">
+          <p class="examples-title">快捷示例（点击自动填充并发送）：</p>
+          <button data-example="list">GET 获取列表</button>
+          <button data-example="single">GET 获取单条</button>
+          <button data-example="post">POST 新增数据</button>
+          <button data-example="delete">DELETE 删除数据</button>
+          <button data-example="notfound">触发 404 错误</button>
+          <button data-example="network">触发网络错误</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2. 响应结果</h2>
+        <div class="status-bar" id="statusBar">尚未发送请求</div>
+        <div class="error-box" id="errorBox"></div>
+        <p class="sub-title">响应头</p>
+        <div class="headers" id="headers"><span class="empty">（暂无响应头）</span></div>
+        <p class="sub-title">响应体</p>
+        <pre id="result">（暂无响应体）</pre>
+      </div>
+
+      <div class="card">
+        <h2>3. 请求记录</h2>
+        <p class="desc">最近 8 次请求，可对照检查状态码与耗时</p>
+        <ul class="history" id="history">
+          <li class="empty">暂无请求记录</li>
+        </ul>
+      </div>
+    </div>
+    <p class="footer">杨长鉷 · 高级网页设计 · 17-4</p>
+  </div>
+
+  <script>
+    var methodEl = document.getElementById("method");
+    var urlEl = document.getElementById("url");
+    var bodyEl = document.getElementById("body");
+    var sendBtn = document.getElementById("send");
+    var clearBtn = document.getElementById("clear");
+    var statusBar = document.getElementById("statusBar");
+    var errorBox = document.getElementById("errorBox");
+    var headersEl = document.getElementById("headers");
+    var resultEl = document.getElementById("result");
+    var historyEl = document.getElementById("history");
+
+    var records = [];
+    var exampleBody = '{"title": "杨长鉷的测试数据", "body": "这是一条通过 POST 提交的内容", "userId": 1}';
+
+    function needBody(method) {
+      return method === "POST" || method === "PUT" || method === "PATCH";
+    }
+
+    function syncBodyField() {
+      var need = needBody(methodEl.value);
+      bodyEl.disabled = !need;
+      bodyEl.placeholder = need
+        ? '请输入 JSON 请求体，例如：' + exampleBody
+        : "GET 与 DELETE 请求不需要请求体";
+      bodyEl.style.opacity = need ? "1" : "0.5";
+      bodyEl.style.background = need ? "#fff" : "#edf2f7";
+    }
+
+    methodEl.addEventListener("change", syncBodyField);
+    syncBodyField();
+
+    function setStatus(text, type) {
+      statusBar.textContent = text;
+      statusBar.className = "status-bar" + (type ? " " + type : "");
+    }
+
+    function showError(text) {
+      errorBox.textContent = "⚠ " + text;
+      errorBox.style.display = "block";
+    }
+
+    function hideError() {
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
+    }
+
+    function methodClass(method) {
+      var map = { POST: "post", PUT: "put", PATCH: "patch", DELETE: "delete" };
+      return map[method] ? " " + map[method] : "";
+    }
+
+    function renderHistory() {
+      if (records.length === 0) {
+        historyEl.innerHTML = '<li class="empty">暂无请求记录</li>';
+        return;
+      }
+      var html = records.map(function (item) {
+        return '<li>' +
+          '<span class="method-tag' + methodClass(item.method) + '">' + item.method + '</span>' +
+          '<span class="h-url">' + item.url + '</span>' +
+          '<span class="h-status ' + (item.ok ? "good" : "bad") + '">' + item.status + '</span>' +
+          '<span class="h-status">' + item.elapsed + '</span>' +
+          '</li>';
+      }).join("");
+      historyEl.innerHTML = html;
+    }
+
+    function addRecord(method, url, status, elapsed, ok) {
+      records.unshift({
+        method: method,
+        url: url,
+        status: status,
+        elapsed: elapsed,
+        ok: ok
+      });
+      if (records.length > 8) {
+        records.pop();
+      }
+      renderHistory();
+    }
+
+    async function sendRequest() {
+      hideError();
+      var method = methodEl.value;
+      var url = urlEl.value.trim();
+
+      if (!url) {
+        setStatus("请求未发送", "bad");
+        showError("错误：接口地址不能为空，请填写完整 URL");
+        return;
+      }
+      if (!/^https?:\/\//i.test(url)) {
+        setStatus("请求未发送", "bad");
+        showError("错误：接口地址必须以 http:// 或 https:// 开头");
+        return;
+      }
+
+      var options = { method: method };
+
+      if (needBody(method)) {
+        var bodyText = bodyEl.value.trim();
+        if (!bodyText) {
+          setStatus("请求未发送", "bad");
+          showError("错误：" + method + " 请求必须填写请求体（JSON 格式）");
+          return;
+        }
+        try {
+          JSON.parse(bodyText);
+        } catch (e) {
+          setStatus("请求未发送", "bad");
+          showError("错误：请求体不是合法的 JSON —— " + e.message);
+          return;
+        }
+        options.headers = { "Content-Type": "application/json; charset=UTF-8" };
+        options.body = bodyText;
+      }
+
+      sendBtn.disabled = true;
+      setStatus("正在发送 " + method + " 请求……", "ok");
+      headersEl.innerHTML = '<span class="empty">（请求中）</span>';
+      resultEl.textContent = "（请求中，等待响应……）";
+
+      var start = Date.now();
+
+      try {
+        var response = await fetch(url, options);
+        var elapsed = Date.now() - start;
+        var text = await response.text();
+
+        var pretty = text;
+        if (text) {
+          try {
+            pretty = JSON.stringify(JSON.parse(text), null, 2);
+          } catch (e) {
+            pretty = text;
+          }
+        } else {
+          pretty = "（空响应体）";
+        }
+        resultEl.textContent = pretty;
+
+        var headerHtml = "";
+        response.headers.forEach(function (value, key) {
+          headerHtml += '<div class="row"><span class="key">' + key + '</span><span class="value">' + value + '</span></div>';
+        });
+        headersEl.innerHTML = headerHtml || '<span class="empty">（无响应头）</span>';
+
+        setStatus(
+          "HTTP " + response.status + " " + response.statusText + "　·　耗时 " + elapsed + " ms　·　" + method + " " + url,
+          response.ok ? "ok" : "bad"
+        );
+
+        if (!response.ok) {
+          showError("错误：服务器返回失败状态码 " + response.status + " " + response.statusText + "，请检查接口地址或参数");
+        }
+
+        addRecord(method, url, response.status + " " + response.statusText, elapsed + " ms", response.ok);
+      } catch (err) {
+        var cost = Date.now() - start;
+        setStatus("请求失败", "bad");
+        showError("错误：" + err.message + "（可能原因：网络不可用、接口地址不存在、或跨域被阻止）");
+        headersEl.innerHTML = '<span class="empty">（未收到响应头）</span>';
+        resultEl.textContent = "（未收到响应体）";
+        addRecord(method, url, "失败", cost + " ms", false);
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    var examples = {
+      list: {
+        method: "GET",
+        url: "https://jsonplaceholder.typicode.com/posts?_limit=3",
+        body: ""
+      },
+      single: {
+        method: "GET",
+        url: "https://jsonplaceholder.typicode.com/posts/1",
+        body: ""
+      },
+      post: {
+        method: "POST",
+        url: "https://jsonplaceholder.typicode.com/posts",
+        body: exampleBody
+      },
+      delete: {
+        method: "DELETE",
+        url: "https://jsonplaceholder.typicode.com/posts/1",
+        body: ""
+      },
+      notfound: {
+        method: "GET",
+        url: "https://jsonplaceholder.typicode.com/no-such-api",
+        body: ""
+      },
+      network: {
+        method: "GET",
+        url: "https://no-such-host.example.com/posts",
+        body: ""
+      }
+    };
+
+    document.querySelectorAll(".examples button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var cfg = examples[btn.getAttribute("data-example")];
+        methodEl.value = cfg.method;
+        urlEl.value = cfg.url;
+        bodyEl.value = cfg.body;
+        syncBodyField();
+        sendRequest();
+      });
+    });
+
+    sendBtn.addEventListener("click", sendRequest);
+
+    clearBtn.addEventListener("click", function () {
+      hideError();
+      setStatus("尚未发送请求", "");
+      headersEl.innerHTML = '<span class="empty">（暂无响应头）</span>';
+      resultEl.textContent = "（暂无响应体）";
+    });
+
+    renderHistory();
+  </script>
+</body>
+</html>
