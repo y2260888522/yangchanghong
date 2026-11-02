@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>17-3 商品列表</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .header p {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    .content {
+      padding: 30px;
+    }
+    .status {
+      margin-bottom: 20px;
+      color: #718096;
+      font-size: 0.9rem;
+    }
+    .loading {
+      color: #b7791f;
+    }
+    .error {
+      color: #c53030;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 22px;
+    }
+    .card {
+      display: flex;
+      flex-direction: column;
+      background: #f8f9fa;
+      border-radius: 14px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 28px rgba(102, 126, 234, 0.3);
+    }
+    .thumb {
+      height: 180px;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+    .card-title {
+      font-size: 1.05rem;
+      color: #2d3748;
+      font-weight: bold;
+    }
+    .card-category {
+      font-size: 0.8rem;
+      color: #667eea;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: #718096;
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 8px;
+    }
+    .price {
+      font-size: 1.15rem;
+      color: #e53e3e;
+      font-weight: bold;
+    }
+    .rating {
+      font-size: 0.85rem;
+      color: #b7791f;
+    }
+    .more {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      color: #667eea;
+    }
+    .footer {
+      text-align: center;
+      color: #718096;
+      font-size: 0.9rem;
+      padding: 0 0 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>商品列表</h1>
+      <p>数据来源：https://dummyjson.com/products?limit=8</p>
+    </div>
+    <div class="content">
+      <p class="status loading" id="status">正在加载商品列表……</p>
+      <div class="grid" id="grid"></div>
+    </div>
+    <p class="footer">杨长鉷 · 高级网页设计 · 17-3</p>
+  </div>
+
+  <script>
+    var listUrl = "https://dummyjson.com/products?limit=8";
+    var statusEl = document.getElementById("status");
+    var grid = document.getElementById("grid");
+
+    fetch(listUrl)
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("请求失败，状态码：" + response.status);
+        }
+        return response.json();
+      })
+      .then(function (data) {
+        var html = data.products.map(function (item) {
+          var price = item.price.toFixed(2);
+          return '<a class="card" href="./17-3-detail.html?id=' + item.id + '">' +
+            '<div class="thumb"><img src="' + item.thumbnail + '" alt="' + item.title + '"></div>' +
+            '<div class="card-body">' +
+              '<div class="card-category">' + item.category + '</div>' +
+              '<div class="card-title">' + item.title + '</div>' +
+              '<div class="card-desc">' + item.description + '</div>' +
+              '<div class="card-bottom">' +
+                '<span class="price">$' + price + '</span>' +
+                '<span class="rating">★ ' + item.rating + '</span>' +
+              '</div>' +
+              '<span class="more">查看详情 →</span>' +
+            '</div>' +
+          '</a>';
+        }).join("");
+
+        grid.innerHTML = html;
+        statusEl.className = "status";
+        statusEl.textContent = "共加载 " + data.products.length + " 件商品，点击卡片查看详情";
+      })
+      .catch(function (error) {
+        statusEl.className = "status error";
+        statusEl.textContent = "加载失败：" + error.message;
+      });
+  </script>
+</body>
+</html>

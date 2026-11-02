@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>17-3-detail 商品详情</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 26px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .header h1 {
+      font-size: 1.6rem;
+    }
+    .back {
+      color: #fff;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .back:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+    .content {
+      padding: 30px;
+    }
+    .status {
+      margin-bottom: 20px;
+      color: #718096;
+      font-size: 0.9rem;
+    }
+    .loading {
+      color: #b7791f;
+    }
+    .error {
+      color: #c53030;
+    }
+    .detail {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    .gallery {
+      flex: 1 1 340px;
+      min-width: 280px;
+    }
+    .main-img {
+      width: 100%;
+      height: 320px;
+      background: #f8f9fa;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .main-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .thumbs {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .thumbs img {
+      width: 66px;
+      height: 66px;
+      object-fit: contain;
+      background: #f8f9fa;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .thumbs img:hover,
+    .thumbs img.active {
+      border-color: #667eea;
+    }
+    .info {
+      flex: 1 1 340px;
+      min-width: 280px;
+    }
+    .info h2 {
+      font-size: 1.7rem;
+      color: #2d3748;
+      margin-bottom: 10px;
+    }
+    .category {
+      display: inline-block;
+      background: #667eea;
+      color: #fff;
+      padding: 3px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .price-line {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .price {
+      font-size: 2rem;
+      color: #e53e3e;
+      font-weight: bold;
+    }
+    .old-price {
+      color: #a0aec0;
+      text-decoration: line-through;
+    }
+    .discount {
+      color: #38a169;
+      font-weight: bold;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .meta span {
+      background: #edf2f7;
+      color: #4a5568;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    .desc {
+      color: #4a5568;
+      line-height: 1.9;
+      margin-bottom: 16px;
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .tags span {
+      background: #faf5ff;
+      color: #6b46c1;
+      border: 1px solid #d6bcfa;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 12px 30px;
+      border-radius: 30px;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+    .btn-ghost {
+      background: #edf2f7;
+      color: #4a5568;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(102, 126, 234, 0.3);
+    }
+    .footer {
+      text-align: center;
+      color: #718096;
+      font-size: 0.9rem;
+      padding: 0 0 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>商品详情</h1>
+      <a class="back" href="./17-3.html">← 返回列表</a>
+    </div>
+    <div class="content">
+      <p class="status loading" id="status">正在加载商品详情……</p>
+      <div class="detail" id="detail"></div>
+    </div>
+    <p class="footer">杨长鉷 · 高级网页设计 · 17-3-detail</p>
+  </div>
+
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var id = params.get("id") || "1";
+    var detailUrl = "https://dummyjson.com/products/" + id;
+    var statusEl = document.getElementById("status");
+    var detail = document.getElementById("detail");
+
+    fetch(detailUrl)
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("请求失败，状态码：" + response.status);
+        }
+        return response.json();
+      })
+      .then(function (item) {
+        var oldPrice = (item.price / (1 - item.discountPercentage / 100)).toFixed(2);
+        var images = item.images.map(function (src, index) {
+          return '<img src="' + src + '" alt="' + item.title + '" class="' + (index === 0 ? "active" : "") + '">';
+        }).join("");
+        var tags = item.tags.map(function (tag) {
+          return "<span>" + tag + "</span>";
+        }).join("");
+
+        detail.innerHTML =
+          '<div class="gallery">' +
+            '<div class="main-img"><img id="mainImg" src="' + item.images[0] + '" alt="' + item.title + '"></div>' +
+            '<div class="thumbs" id="thumbs">' + images + '</div>' +
+          '</div>' +
+          '<div class="info">' +
+            '<h2>' + item.title + '</h2>' +
+            '<span class="category">' + item.category + '</span>' +
+            '<div class="price-line">' +
+              '<span class="price">$' + item.price.toFixed(2) + '</span>' +
+              '<span class="old-price">$' + oldPrice + '</span>' +
+              '<span class="discount">省 ' + item.discountPercentage.toFixed(1) + '%</span>' +
+            '</div>' +
+            '<div class="meta">' +
+              '<span>★ 评分 ' + item.rating + '</span>' +
+              '<span>库存 ' + item.stock + '</span>' +
+              '<span>品牌 ' + (item.brand || "无") + '</span>' +
+              '<span>编号 ' + item.id + '</span>' +
+            '</div>' +
+            '<p class="desc">' + item.description + '</p>' +
+            '<div class="tags">' + tags + '</div>' +
+            '<div class="actions">' +
+              '<a class="btn btn-primary" href="./17-3-detail.html?id=' + (item.id > 1 ? item.id - 1 : 8) + '">上一件</a>' +
+              '<a class="btn btn-ghost" href="./17-3-detail.html?id=' + (item.id < 8 ? item.id + 1 : 1) + '">下一件</a>' +
+              '<a class="btn btn-ghost" href="./17-3.html">返回列表</a>' +
+            '</div>' +
+          '</div>';
+
+        statusEl.className = "status";
+        statusEl.textContent = "数据来源：" + detailUrl;
+
+        var mainImg = document.getElementById("mainImg");
+        var thumbList = document.querySelectorAll("#thumbs img");
+        thumbList.forEach(function (thumb) {
+          thumb.addEventListener("click", function () {
+            mainImg.src = thumb.src;
+            thumbList.forEach(function (t) {
+              t.classList.remove("active");
+            });
+            thumb.classList.add("active");
+          });
+        });
+      })
+      .catch(function (error) {
+        statusEl.className = "status error";
+        statusEl.textContent = "加载失败：" + error.message + "（请检查链接中的 id 是否正确）";
+      });
+  </script>
+</body>
+</html>

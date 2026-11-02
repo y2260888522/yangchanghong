@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>17-1 JSON 的展示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .header p {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    .content {
+      padding: 30px;
+    }
+    .card {
+      background: #f8f9fa;
+      border-left: 5px solid #667eea;
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+    .card h2 {
+      color: #667eea;
+      font-size: 1.2rem;
+      margin-bottom: 14px;
+    }
+    pre {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 18px;
+      border-radius: 10px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    .row {
+      display: flex;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 10px 4px;
+    }
+    .row:last-child {
+      border-bottom: none;
+    }
+    .key {
+      flex: 0 0 130px;
+      color: #667eea;
+      font-weight: bold;
+    }
+    .value {
+      color: #4a5568;
+      font-family: 'Consolas', monospace;
+    }
+    .tag {
+      display: inline-block;
+      background: #667eea;
+      color: #fff;
+      border-radius: 20px;
+      padding: 2px 12px;
+      margin-right: 6px;
+      font-size: 0.85rem;
+    }
+    .footer {
+      text-align: center;
+      color: #718096;
+      font-size: 0.9rem;
+      padding: 0 0 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>JSON 数据展示</h1>
+      <p>JSON 字符串 → JavaScript 对象 → 页面渲染</p>
+    </div>
+    <div class="content">
+      <div class="card">
+        <h2>1. JSON 字符串（原始文本）</h2>
+        <pre id="jsonText"></pre>
+      </div>
+      <div class="card">
+        <h2>2. JSON.parse 解析后按属性展示</h2>
+        <div id="objectView"></div>
+      </div>
+      <div class="card">
+        <h2>3. JSON.stringify 格式化输出</h2>
+        <pre id="prettyText"></pre>
+      </div>
+    </div>
+    <p class="footer">杨长鉷 · 高级网页设计 · 17-1</p>
+  </div>
+
+  <script>
+    var jsonText = '{"name":"杨长鉷","course":"高级网页设计","lesson":"17-1","score":95,"online":true,"remark":null,"skills":["HTML","CSS","JavaScript"]}';
+
+    document.getElementById("jsonText").textContent = jsonText;
+
+    var data = JSON.parse(jsonText);
+
+    var html = "";
+    for (var key in data) {
+      var value = data[key];
+      if (Array.isArray(value)) {
+        value = value.map(function (item) {
+          return '<span class="tag">' + item + '</span>';
+        }).join("");
+      } else if (value === null) {
+        value = "null";
+      } else {
+        value = String(value);
+      }
+      html += '<div class="row"><div class="key">' + key + '</div><div class="value">' + value + '</div></div>';
+    }
+    document.getElementById("objectView").innerHTML = html;
+
+    document.getElementById("prettyText").textContent = JSON.stringify(data, null, 2);
+  </script>
+</body>
+</html>

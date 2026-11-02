@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>17-2 fetch 获取接口数据</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .header p {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    .content {
+      padding: 30px;
+    }
+    .quote-box {
+      background: #f8f9fa;
+      border-left: 5px solid #667eea;
+      border-radius: 12px;
+      padding: 28px;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .quote-text {
+      font-size: 1.25rem;
+      line-height: 1.8;
+      color: #2d3748;
+    }
+    .quote-author {
+      margin-top: 18px;
+      text-align: right;
+      color: #667eea;
+      font-weight: bold;
+    }
+    .status {
+      margin-bottom: 16px;
+      color: #718096;
+      font-size: 0.9rem;
+    }
+    .loading {
+      color: #b7791f;
+    }
+    .error {
+      color: #c53030;
+    }
+    .btn {
+      display: block;
+      margin: 24px auto 0;
+      padding: 12px 36px;
+      border: none;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(102, 126, 234, 0.4);
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    pre {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 18px;
+      border-radius: 10px;
+      margin-top: 22px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    .footer {
+      text-align: center;
+      color: #718096;
+      font-size: 0.9rem;
+      padding: 0 0 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>使用 fetch 获取接口数据</h1>
+      <p>接口：https://dummyjson.com/quotes/random（支持跨域访问）</p>
+    </div>
+    <div class="content">
+      <p class="status" id="status">等待获取数据……</p>
+      <div class="quote-box" id="quoteBox">
+        <div class="quote-text" id="quoteText">点击下方按钮，从接口获取一条名言</div>
+        <div class="quote-author" id="quoteAuthor"></div>
+      </div>
+      <button class="btn" id="loadBtn">获取一条名言</button>
+      <pre id="rawText">接口返回的原始 JSON 会显示在这里</pre>
+    </div>
+    <p class="footer">杨长鉷 · 高级网页设计 · 17-2</p>
+  </div>
+
+  <script>
+    var apiUrl = "https://dummyjson.com/quotes/random";
+    var statusEl = document.getElementById("status");
+    var quoteText = document.getElementById("quoteText");
+    var quoteAuthor = document.getElementById("quoteAuthor");
+    var rawText = document.getElementById("rawText");
+    var loadBtn = document.getElementById("loadBtn");
+
+    function loadQuote() {
+      loadBtn.disabled = true;
+      statusEl.className = "status loading";
+      statusEl.textContent = "正在请求接口……";
+
+      fetch(apiUrl)
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("请求失败，状态码：" + response.status);
+          }
+          return response.json();
+        })
+        .then(function (data) {
+          quoteText.textContent = "“" + data.quote + "”";
+          quoteAuthor.textContent = "—— " + data.author;
+          rawText.textContent = JSON.stringify(data, null, 2);
+          statusEl.className = "status";
+          statusEl.textContent = "获取成功，数据编号：" + data.id;
+        })
+        .catch(function (error) {
+          quoteText.textContent = "获取数据失败";
+          quoteAuthor.textContent = "";
+          rawText.textContent = String(error);
+          statusEl.className = "status error";
+          statusEl.textContent = "出错了：" + error.message;
+        })
+        .finally(function () {
+          loadBtn.disabled = false;
+        });
+    }
+
+    loadBtn.addEventListener("click", loadQuote);
+    loadQuote();
+  </script>
+</body>
+</html>
