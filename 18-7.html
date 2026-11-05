@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>18-7 Three.js 3D 图表</title>
+  <script src="./cdn/three.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.16), transparent 45%),
+        radial-gradient(circle at 92% 100%, rgba(167, 139, 250, 0.18), transparent 46%),
+        #060b16;
+      min-height: 100vh;
+      padding: 34px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page {
+      width: 100%;
+      max-width: 1220px;
+      background: #0a1020;
+      border: 1px solid rgba(125, 165, 255, 0.18);
+      border-radius: 22px;
+      box-shadow: 0 26px 70px rgba(2, 8, 23, 0.75), 0 0 40px rgba(56, 189, 248, 0.08);
+      padding: 26px;
+    }
+    .page-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 18px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(125, 165, 255, 0.16);
+    }
+    .page-head h1 { font-size: 25px; color: #f8fafc; letter-spacing: 1px; }
+    .page-head p { margin-top: 7px; font-size: 12.5px; color: #94a3b8; letter-spacing: 1.4px; }
+    .tag {
+      flex: none;
+      font-size: 12px;
+      color: #7dd3fc;
+      padding: 7px 15px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      white-space: nowrap;
+    }
+    .charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(20, 33, 56, 0.95), rgba(8, 16, 32, 0.95));
+      border: 1px solid rgba(125, 211, 252, 0.22);
+      border-radius: 16px;
+      padding: 16px 16px 14px;
+      box-shadow: inset 0 0 40px rgba(56, 189, 248, 0.05);
+    }
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 4px 10px;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+    .card-title i {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18);
+    }
+    .card-title span { font-size: 10.5px; font-weight: 400; color: #7c8ba1; letter-spacing: 1px; }
+    .chart { width: 100%; height: 380px; position: relative; }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      justify-content: center;
+      padding-top: 6px;
+      color: #94a3b8;
+      font-size: 11.5px;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .legend b { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(125, 165, 255, 0.16);
+      font-size: 11.5px;
+      color: #64748b;
+    }
+    .webgl-error {
+      position: absolute; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      color: #fca5a5; font-size: 13px; text-align: center; padding: 20px;
+    }
+    @media (max-width: 860px) {
+      .charts { grid-template-columns: 1fr; }
+      .page { padding: 20px 16px; }
+      .chart { height: 330px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <h1>Three.js 3D 数据图表</h1>
+        <p>3D BAR CHART &amp; 3D DONUT CHART · 本地 three.min.js 渲染</p>
+      </div>
+      <div class="tag">18-7 · Three.js</div>
+    </div>
+
+    <div class="charts">
+      <div class="card">
+        <div class="card-title"><i></i>2026 上半年销售额 <span>3D BAR CHART · 万元</span></div>
+        <div class="chart" id="barChart"></div>
+        <div class="legend">
+          <span><b style="background:#38bdf8"></b>1 - 3 月</span>
+          <span><b style="background:#a78bfa"></b>4 - 6 月</span>
+          <span>拖拽鼠标可旋转视角</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i style="background:#a78bfa;box-shadow:0 0 0 4px rgba(167,139,250,.18)"></i>商品品类销售占比 <span>3D DONUT CHART</span></div>
+        <div class="chart" id="donutChart"></div>
+        <div class="legend">
+          <span><b style="background:#38bdf8"></b>数码家电 31.6%</span>
+          <span><b style="background:#a78bfa"></b>服饰鞋包 23.3%</span>
+          <span><b style="background:#34d399"></b>美妆个护 19.5%</span>
+          <span><b style="background:#fbbf24"></b>食品生鲜 14.3%</span>
+          <span><b style="background:#f472b6"></b>家居日用 11.3%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>柱状图按月份映射高度，环形图按品类占比映射扇形角度与厚度。</span>
+      <span>Three.js r128 · WebGL · 18-7</span>
+    </div>
+  </div>
+
+  <script>
+    /* ---------------- 公共工具 ---------------- */
+    function makeLabel(text, options) {
+      const opt = options || {};
+      const fontSize = opt.fontSize || 46;
+      const font = '600 ' + fontSize + 'px "Microsoft YaHei", Arial, sans-serif';
+
+      // 先测量文字宽度，再决定画布尺寸
+      const probe = document.createElement('canvas').getContext('2d');
+      probe.font = font;
+      const textWidth = probe.measureText(text).width;
+
+      const width = Math.ceil(textWidth + fontSize * 1.3);
+      const height = Math.ceil(fontSize * 2.0);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const g = canvas.getContext('2d');
+
+      // 圆角底板
+      const r = Math.min(height / 2, fontSize * 0.75);
+      g.beginPath();
+      g.moveTo(r, 0);
+      g.arcTo(width, 0, width, height, r);
+      g.arcTo(width, height, 0, height, r);
+      g.arcTo(0, height, 0, 0, r);
+      g.arcTo(0, 0, width, 0, r);
+      g.closePath();
+      g.fillStyle = opt.bg || 'rgba(8, 17, 32, 0.72)';
+      g.fill();
+      g.strokeStyle = opt.border || 'rgba(125, 211, 252, 0.35)';
+      g.lineWidth = 3;
+      g.stroke();
+
+      g.fillStyle = opt.color || '#e2e8f0';
+      g.font = font;
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      g.fillText(text, width / 2, height / 2 - 2);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        depthTest: false
+      });
+      const sprite = new THREE.Sprite(material);
+      const worldH = opt.worldHeight || 0.42;
+      sprite.scale.set(worldH * (width / height), worldH, 1);
+      sprite.renderOrder = 999;
+      return sprite;
+    }
+
+    function createRenderer(container) {
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setClearColor(0x000000, 0);
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      renderer.domElement.style.display = 'block';
+      renderer.domElement.style.width = '100%';
+      renderer.domElement.style.height = '100%';
+      container.appendChild(renderer.domElement);
+      return renderer;
+    }
+
+    function addLights(scene) {
+      scene.add(new THREE.AmbientLight(0xbfd6ff, 0.75));
+
+      const dir = new THREE.DirectionalLight(0xffffff, 1.1);
+      dir.position.set(6, 12, 8);
+      scene.add(dir);
+
+      const rim = new THREE.PointLight(0x38bdf8, 1.1, 40);
+      rim.position.set(-6, 6, -8);
+      scene.add(rim);
+
+      const warm = new THREE.PointLight(0xa78bfa, 0.8, 30);
+      warm.position.set(7, 4, 6);
+      scene.add(warm);
+    }
+
+    function enableDragRotate(container, camera, target, radiusX, radiusZ, height) {
+      let dragging = false;
+      let lastX = 0;
+      let lastY = 0;
+      let yaw = 0;
+      let pitch = 0;
+
+      container.style.cursor = 'grab';
+
+      container.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        container.style.cursor = 'grabbing';
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        yaw += (e.clientX - lastX) * 0.004;
+        pitch = Math.max(-0.35, Math.min(0.55, pitch + (e.clientY - lastY) * 0.003));
+        lastX = e.clientX;
+        lastY = e.clientY;
+      });
+
+      window.addEventListener('pointerup', () => {
+        dragging = false;
+        container.style.cursor = 'grab';
+      });
+
+      return function (time) {
+        const auto = Math.sin(time * 0.18) * 0.08;
+        camera.position.x = Math.sin(0.6 + yaw + auto) * radiusX;
+        camera.position.z = Math.cos(0.6 + yaw + auto) * radiusZ;
+        camera.position.y = height + pitch * 4;
+        camera.lookAt(target.x, target.y, target.z);
+      };
+    }
+
+    /* ---------------- 3D 柱状图 ---------------- */
+    function buildBarChart() {
+      const container = document.getElementById('barChart');
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+      camera.position.set(8, 6.5, 10);
+      const renderer = createRenderer(container);
+
+      addLights(scene);
+
+      // 底座与网格
+      const floor = new THREE.Mesh(
+        new THREE.BoxGeometry(9.4, 0.18, 3.8),
+        new THREE.MeshStandardMaterial({ color: 0x0b1730, metalness: 0.55, roughness: 0.55 })
+      );
+      floor.position.y = -0.09;
+      scene.add(floor);
+
+      const grid = new THREE.GridHelper(9.4, 9, 0x2c5a8a, 0x18324f);
+      grid.position.y = 0.012;
+      grid.material.transparent = true;
+      grid.material.opacity = 0.55;
+      scene.add(grid);
+
+      const group = new THREE.Group();
+      scene.add(group);
+
+      const months = ['1月', '2月', '3月', '4月', '5月', '6月'];
+      const values = [168, 192, 214, 186, 238, 276];
+      const maxValue = Math.max.apply(null, values);
+      const startColor = new THREE.Color(0x38bdf8);
+      const endColor = new THREE.Color(0xa78bfa);
+
+      months.forEach((month, i) => {
+        const h = 0.35 + (values[i] / maxValue) * 3.0;
+        const x = -2.75 + i * 1.1;
+        const color = new THREE.Color().copy(startColor).lerp(endColor, i / (months.length - 1));
+
+        const material = new THREE.MeshStandardMaterial({
+          color: color,
+          metalness: 0.35,
+          roughness: 0.3,
+          emissive: new THREE.Color(color).multiplyScalar(0.18)
+        });
+
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(0.72, h, 0.72), material);
+        bar.position.set(x, h / 2, 0);
+        group.add(bar);
+
+        // 顶面高亮
+        const cap = new THREE.Mesh(
+          new THREE.BoxGeometry(0.76, 0.05, 0.76),
+          new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: new THREE.Color(color), emissiveIntensity: 0.55, metalness: 0.4, roughness: 0.25 })
+        );
+        cap.position.set(x, h + 0.02, 0);
+        group.add(cap);
+
+        // 数值标签
+        const valueLabel = makeLabel(String(values[i]), { worldHeight: 0.34, fontSize: 50, color: '#e0f2fe' });
+        valueLabel.position.set(x, h + 0.55, 0);
+        group.add(valueLabel);
+
+        // 月份标签
+        const monthLabel = makeLabel(month, { worldHeight: 0.3, fontSize: 46, color: '#94a3b8', bg: 'rgba(8, 17, 32, 0.5)', border: 'rgba(148, 163, 184, 0.25)' });
+        monthLabel.position.set(x, 0.06, 1.45);
+        group.add(monthLabel);
+      });
+
+      // 坐标参考线
+      const yAxis = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-3.55, 0.02, -1.35), new THREE.Vector3(-3.55, 4.1, -1.35)]),
+        new THREE.LineBasicMaterial({ color: 0x33557d, transparent: true, opacity: 0.7 })
+      );
+      scene.add(yAxis);
+
+      const rotate = enableDragRotate(container, camera, { x: 0, y: 1.7, z: 0 }, 8.6, 10.2, 6.6);
+
+      function resize() {
+        const w = container.clientWidth || 500;
+        const h = container.clientHeight || 380;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      new ResizeObserver(resize).observe(container);
+
+      return {
+        scene: scene,
+        camera: camera,
+        renderer: renderer,
+        update: function (time) {
+          rotate(time);
+          renderer.render(scene, camera);
+        }
+      };
+    }
+
+    /* ---------------- 3D 环形图 ---------------- */
+    function buildDonutChart() {
+      const container = document.getElementById('donutChart');
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+      camera.position.set(0, 7, 8.2);
+      camera.lookAt(0, 0.5, 0);
+      const renderer = createRenderer(container);
+
+      addLights(scene);
+
+      // 底盘
+      const base = new THREE.Mesh(
+        new THREE.CylinderGeometry(3.05, 3.05, 0.12, 96),
+        new THREE.MeshStandardMaterial({ color: 0x0b1730, metalness: 0.6, roughness: 0.5 })
+      );
+      base.position.y = -0.06;
+      scene.add(base);
+
+      const bottleRing = new THREE.Mesh(
+        new THREE.TorusGeometry(3.0, 0.025, 12, 96),
+        new THREE.MeshBasicMaterial({ color: 0x2f5f90, transparent: true, opacity: 0.7 })
+      );
+      bottleRing.rotation.x = Math.PI / 2;
+      bottleRing.position.y = 0.02;
+      scene.add(bottleRing);
+
+      const group = new THREE.Group();
+      scene.add(group);
+
+      const data = [
+        { name: '数码家电', value: 420, color: 0x38bdf8 },
+        { name: '服饰鞋包', value: 310, color: 0xa78bfa },
+        { name: '美妆个护', value: 260, color: 0x34d399 },
+        { name: '食品生鲜', value: 190, color: 0xfbbf24 },
+        { name: '家居日用', value: 150, color: 0xf472b6 }
+      ];
+      const total = data.reduce(function (s, d) { return s + d.value; }, 0);
+      const outer = 2.75;
+      const inner = 1.3;
+      const maxDepth = 1.5;
+      let angle = Math.PI * 0.5;
+
+      data.forEach(function (item) {
+        const span = (item.value / total) * Math.PI * 2;
+        const a0 = angle;
+        const a1 = angle + span;
+        const depth = 0.35 + (item.value / 420) * maxDepth;
+
+        const shape = new THREE.Shape();
+        shape.moveTo(Math.cos(a0) * outer, Math.sin(a0) * outer);
+        shape.absarc(0, 0, outer, a0, a1, false);
+        shape.lineTo(Math.cos(a1) * inner, Math.sin(a1) * inner);
+        shape.absarc(0, 0, inner, a1, a0, true);
+        shape.closePath();
+
+        const geometry = new THREE.ExtrudeGeometry(shape, {
+          depth: depth,
+          bevelEnabled: true,
+          bevelSegments: 2,
+          steps: 1,
+          bevelSize: 0.04,
+          bevelThickness: 0.04
+        });
+
+        const color = new THREE.Color(item.color);
+        const material = new THREE.MeshStandardMaterial({
+          color: color,
+          metalness: 0.4,
+          roughness: 0.3,
+          emissive: new THREE.Color(color).multiplyScalar(0.16)
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.rotation.x = -Math.PI / 2;   // 平铺到 XZ 平面，厚度沿 Y 轴
+        mesh.position.y = 0.02;
+        group.add(mesh);
+
+        // 标签
+        const mid = (a0 + a1) / 2;
+        const percent = ((item.value / total) * 100).toFixed(1);
+        const label = makeLabel(item.name + ' ' + percent + '%', {
+          worldHeight: 0.4,
+          fontSize: 40,
+          color: '#e2e8f0'
+        });
+        label.position.set(Math.cos(mid) * 2.6, depth + 0.58, Math.sin(mid) * 2.6);
+        group.add(label);
+
+        angle = a1;
+      });
+
+      function resize() {
+        const w = container.clientWidth || 500;
+        const h = container.clientHeight || 380;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      new ResizeObserver(resize).observe(container);
+
+      return {
+        scene: scene,
+        camera: camera,
+        renderer: renderer,
+        update: function (time) {
+          group.rotation.y = time * 0.22;
+          renderer.render(scene, camera);
+        }
+      };
+    }
+
+    /* ---------------- 启动 ---------------- */
+    let bar = null;
+    let donut = null;
+
+    try {
+      bar = buildBarChart();
+      donut = buildDonutChart();
+    } catch (err) {
+      document.querySelectorAll('.chart').forEach(function (box) {
+        const tip = document.createElement('div');
+        tip.className = 'webgl-error';
+        tip.style.display = 'flex';
+        tip.textContent = 'WebGL 初始化失败：' + err.message;
+        box.appendChild(tip);
+      });
+      console.error(err);
+    }
+
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+      if (bar) bar.update(t);
+      if (donut) donut.update(t);
+    }
+
+    if (bar && donut) animate();
+  </script>
+</body>
+</html>

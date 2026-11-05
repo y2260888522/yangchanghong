@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>18-1 Canvas 粒子文字 —— 杨长鉷</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
+    body { background: #060a14; font-family: 'Microsoft YaHei', Arial, sans-serif; }
+    #stage {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: pointer;
+    }
+    .hint {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 20px;
+      border-radius: 999px;
+      background: rgba(13, 23, 42, 0.72);
+      border: 1px solid rgba(125, 211, 252, 0.28);
+      backdrop-filter: blur(8px);
+      color: rgba(226, 232, 240, 0.78);
+      font-size: 13px;
+      letter-spacing: 2px;
+      white-space: nowrap;
+      user-select: none;
+      pointer-events: none;
+      opacity: 1;
+      transform: translate(-50%, 0);
+      transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .hint.ready {
+      color: rgba(224, 242, 254, 0.95);
+      border-color: rgba(125, 211, 252, 0.7);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.28);
+    }
+    .hint-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #38bdf8;
+      animation: dotPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0.45; box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.45); }
+      50% { opacity: 1; box-shadow: 0 0 0 5px rgba(56, 189, 248, 0); }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+  <div class="hint" id="hint">
+    <span class="hint-dot"></span>
+    <span id="hintText">点击画面 · 粒子聚合成姓名</span>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d');
+    const hint = document.getElementById('hint');
+    const hintText = document.getElementById('hintText');
+
+    const NAME = '杨长鉷';
+    const NAME_EN = 'YANG CHANGHONG';
+
+    let W = 0, H = 0, dpr = 1;
+    let textFontSize = 200;
+    let textCenterY = 0;
+    let particles = [];
+    let targets = [];
+
+    /* 'scatter' 粒子漂浮  |  'text' 粒子聚合成文字 */
+    let mode = 'scatter';
+    let modeStart = 0;
+
+    /* ---------------- 自适应 ---------------- */
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      computeTextLayout();
+      initParticles();
+    }
+
+    /* ---------------- 文字采样为粒子目标点 ---------------- */
+    function computeTextLayout() {
+      textFontSize = Math.min(W / 3.7, H * 0.34);
+      textCenterY = H * 0.44;
+
+      const off = document.createElement('canvas');
+      off.width = W;
+      off.height = H;
+      const octx = off.getContext('2d', { willReadFrequently: true });
+
+      octx.font = `900 ${textFontSize}px 'Microsoft YaHei', Arial, 'Microsoft YaHei UI', sans-serif`;
+      octx.textAlign = 'center';
+      octx.textBaseline = 'middle';
+      octx.fillStyle = '#ffffff';
+      octx.fillText(NAME, W / 2, textCenterY);
+
+      const img = octx.getImageData(0, 0, W, H).data;
+      const step = textFontSize > 260 ? 6 : textFontSize > 160 ? 5 : 4;
+      const pts = [];
+
+      for (let y = 0; y < H; y += step) {
+        for (let x = 0; x < W; x += step) {
+          const idx = (y * W + x) * 4;
+          if (img[idx + 3] > 120) pts.push({ x, y });
+        }
+      }
+
+      // 控制粒子数量，兼顾文字轮廓清晰度与性能
+      const MAX = Math.max(900, Math.min(2200, Math.round((W * H) / 1100)));
+      const stride = Math.max(1, Math.floor(pts.length / MAX));
+      targets = [];
+      for (let i = 0; i < pts.length; i += stride) targets.push(pts[i]);
+      if (!targets.length) targets.push({ x: W / 2, y: textCenterY });
+    }
+
+    /* ---------------- 粒子颜色（按横向位置渐变） ---------------- */
+    function colorAt(x) {
+      const t = Math.max(0, Math.min(1, x / W));
+      const stops = [
+        [125, 211, 252],
+        [165, 180, 252],
+        [192, 132, 252],
+        [244, 114, 182]
+      ];
+      const seg = Math.min(stops.length - 2, Math.floor(t * (stops.length - 1)));
+      const k = t * (stops.length - 1) - seg;
+      const a = stops[seg], b = stops[seg + 1];
+      const r = Math.round(a[0] + (b[0] - a[0]) * k);
+      const g = Math.round(a[1] + (b[1] - a[1]) * k);
+      const bl = Math.round(a[2] + (b[2] - a[2]) * k);
+      return `rgb(${r}, ${g}, ${bl})`;
+    }
+
+    /* ---------------- 初始化粒子 ---------------- */
+    function initParticles() {
+      particles = targets.map(t => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.7,
+        vy: (Math.random() - 0.5) * 0.7,
+        tx: t.x,
+        ty: t.y,
+        r: Math.random() * 1.2 + 0.9,
+        seed: Math.random() * Math.PI * 2,
+        color: colorAt(t.x)
+      }));
+      modeStart = performance.now();
+    }
+
+    /* ---------------- 背景 ---------------- */
+    function drawBackground() {
+      const bg = ctx.createRadialGradient(W / 2, H * 0.44, 0, W / 2, H * 0.44, Math.max(W, H) * 0.8);
+      bg.addColorStop(0, '#141d35');
+      bg.addColorStop(0.5, '#0a1122');
+      bg.addColorStop(1, '#05080f');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.strokeStyle = 'rgba(125, 165, 255, 0.055)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < W; x += 64) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      }
+      for (let y = 0; y < H; y += 64) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+
+      const topGlow = ctx.createLinearGradient(0, 0, 0, H * 0.4);
+      topGlow.addColorStop(0, 'rgba(56, 189, 248, 0.10)');
+      topGlow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+      ctx.fillStyle = topGlow;
+      ctx.fillRect(0, 0, W, H * 0.4);
+    }
+
+    /* ---------------- 装饰光环 ---------------- */
+    function drawRings(time, textProgress) {
+      const cx = W / 2;
+      const cy = textCenterY;
+      const baseR = Math.min(W, H) * 0.34;
+      const alpha = 0.5 - textProgress * 0.22;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      for (let i = 0; i < 2; i++) {
+        const r = baseR + i * 38;
+        const rot = time * 0.0007 * (i === 0 ? 1 : -1) + i * 1.2;
+        ctx.save();
+        ctx.rotate(rot);
+        ctx.strokeStyle = `rgba(120, 170, 255, ${alpha * (0.42 - i * 0.12)})`;
+        ctx.lineWidth = 1.1;
+        ctx.setLineDash([8, 16]);
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      const glowR = baseR + 70;
+      const glow = ctx.createRadialGradient(0, 0, glowR * 0.4, 0, 0, glowR);
+      glow.addColorStop(0, `rgba(96, 165, 250, ${0.12 + 0.08 * textProgress})`);
+      glow.addColorStop(1, 'rgba(96, 165, 250, 0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, glowR, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    /* ---------------- 粒子运动 ---------------- */
+    function updateParticles(now) {
+      if (mode === 'text') {
+        particles.forEach(p => {
+          // 弹簧式聚合
+          const ax = (p.tx - p.x) * 0.014;
+          const ay = (p.ty - p.y) * 0.014;
+          p.vx = (p.vx + ax) * 0.90;
+          p.vy = (p.vy + ay) * 0.90;
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // 聚合完成后轻微呼吸闪烁
+          const dx = p.tx - p.x;
+          const dy = p.ty - p.y;
+          if (Math.abs(dx) + Math.abs(dy) < 2.5) {
+            p.x += Math.sin(now * 0.0016 + p.seed) * 0.45;
+            p.y += Math.cos(now * 0.0018 + p.seed) * 0.45;
+          }
+        });
+      } else {
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // 缓慢游动
+          p.vx += Math.sin(now * 0.0009 + p.seed) * 0.008;
+          p.vy += Math.cos(now * 0.0011 + p.seed) * 0.008;
+          p.vx *= 0.985;
+          p.vy *= 0.985;
+
+          // 边界环绕
+          if (p.x < -10) p.x = W + 10;
+          if (p.x > W + 10) p.x = -10;
+          if (p.y < -10) p.y = H + 10;
+          if (p.y > H + 10) p.y = -10;
+        });
+      }
+    }
+
+    /* ---------------- 绘制粒子文字 ---------------- */
+    function drawParticles(now) {
+      const textProgress = mode === 'text'
+        ? Math.min(1, (now - modeStart) / 1400)
+        : 0;
+
+      // 聚合时先铺一层极淡的文字底，帮助辨识轮廓
+      if (textProgress > 0.15) {
+        ctx.save();
+        ctx.globalAlpha = textProgress * 0.10;
+        ctx.font = `900 ${textFontSize}px 'Microsoft YaHei', Arial, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#7dd3fc';
+        ctx.fillText(NAME, W / 2, textCenterY);
+        ctx.restore();
+      }
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+
+      particles.forEach((p, i) => {
+        // 光晕粒子
+        if (i % 9 === 0) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * 3.4, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = 0.055;
+          ctx.fill();
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = mode === 'text' ? 0.92 : 0.75;
+        ctx.fill();
+      });
+
+      ctx.globalAlpha = 1;
+      ctx.restore();
+
+      // 聚合完成后绘制英文名与副标题
+      if (textProgress > 0) {
+        const y = textCenterY + textFontSize * 0.72;
+
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, textProgress * 1.4);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.9)';
+        ctx.font = `400 ${Math.max(12, Math.min(W * 0.012, 18))}px Arial, sans-serif`;
+        ctx.letterSpacing = '6px';
+        ctx.fillText(NAME_EN, W / 2, y);
+        ctx.restore();
+
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, Math.max(0, (textProgress - 0.35) / 0.65)) * 0.8;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '400 14px "Microsoft YaHei", Arial, sans-serif';
+        ctx.letterSpacing = '2px';
+        ctx.fillText('高级网页设计 · CANVAS 粒子文字', W / 2, y + 30);
+        ctx.restore();
+      }
+    }
+
+    /* ---------------- 画布顶部标注 ---------------- */
+    function drawTag() {
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = 'rgba(147, 197, 253, 0.65)';
+      ctx.font = '500 12px "Microsoft YaHei", Arial, sans-serif';
+      ctx.letterSpacing = '4px';
+      ctx.fillText('1 8 - 1   ·   P A R T I C L E   T E X T', W / 2, H * 0.13);
+      ctx.restore();
+    }
+
+    /* ---------------- 主循环 ---------------- */
+    function frame(now) {
+      updateParticles(now);
+
+      const textProgress = mode === 'text'
+        ? Math.min(1, (now - modeStart) / 1400)
+        : 0;
+
+      drawBackground();
+      drawRings(now, textProgress);
+      drawTag();
+      drawParticles(now);
+
+      requestAnimationFrame(frame);
+    }
+
+    /* ---------------- 交互：点击切换 ---------------- */
+    function toggleMode() {
+      modeStart = performance.now();
+
+      if (mode === 'scatter') {
+        mode = 'text';
+        hint.classList.add('ready');
+        hintText.textContent = '点击画面 · 粒子散开';
+      } else {
+        mode = 'scatter';
+        hint.classList.remove('ready');
+        hintText.textContent = '点击画面 · 粒子聚合成姓名';
+
+        // 从文字位置向外爆散
+        particles.forEach(p => {
+          const ang = Math.atan2(p.y - textCenterY, p.x - W / 2) + (Math.random() - 0.5) * 0.7;
+          const speed = 3.5 + Math.random() * 7;
+          p.vx = Math.cos(ang) * speed;
+          p.vy = Math.sin(ang) * speed;
+        });
+      }
+    }
+
+    window.addEventListener('click', toggleMode);
+    window.addEventListener('resize', resize);
+
+    resize();
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

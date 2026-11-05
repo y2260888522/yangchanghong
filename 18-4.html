@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>18-4 ECharts 数据可视化</title>
+  <script src="./cdn/echarts.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(56, 189, 248, 0.18), transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(167, 139, 250, 0.18), transparent 42%),
+        linear-gradient(160deg, #f4f8ff 0%, #eef2fb 100%);
+      min-height: 100vh;
+      padding: 34px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page {
+      width: 100%;
+      max-width: 1180px;
+      background: #ffffff;
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(30, 64, 175, 0.14), 0 2px 8px rgba(15, 23, 42, 0.05);
+      padding: 30px 30px 24px;
+    }
+    .page-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #e8effb;
+    }
+    .page-head h1 { font-size: 25px; color: #0f172a; letter-spacing: 1px; }
+    .page-head p { margin-top: 7px; font-size: 12.5px; color: #64748b; letter-spacing: 1.4px; }
+    .tag {
+      flex: none;
+      font-size: 12px;
+      color: #0369a1;
+      padding: 7px 15px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      white-space: nowrap;
+    }
+    .charts {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+    }
+    .card {
+      background: linear-gradient(180deg, #fbfdff 0%, #f7faff 100%);
+      border: 1px solid #e3ecf9;
+      border-radius: 16px;
+      padding: 16px 16px 10px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.07);
+    }
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 4px 8px;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .card-title i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18);
+    }
+    .card-title span { font-size: 10.5px; font-weight: 400; color: #94a3b8; letter-spacing: 1px; }
+    .chart { width: 100%; height: 350px; }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #e8effb;
+      font-size: 11.5px;
+      color: #94a3b8;
+    }
+    .footer a { color: #0284c7; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    @media (max-width: 880px) {
+      .charts { grid-template-columns: 1fr; }
+      .page { padding: 22px 18px 18px; }
+      .chart { height: 320px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <h1>ECharts 电商数据可视化</h1>
+        <p>BAR CHART &amp; PIE CHART · 本地 CDN 引入 echarts.min.js</p>
+      </div>
+      <div class="tag">18-4 · ECharts</div>
+    </div>
+
+    <div class="charts">
+      <div class="card">
+        <div class="card-title"><i></i>月度销售额对比 <span>BAR CHART</span></div>
+        <div id="barChart" class="chart"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i style="background:#a78bfa;box-shadow:0 0 0 4px rgba(167,139,250,.18)"></i>商品品类销售占比 <span>PIE CHART</span></div>
+        <div id="pieChart" class="chart"></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>数据为课程演示示例，随机生成后固定展示。</span>
+      <span>参考示例代码与配置项：<a href="https://echarts.apache.org/examples/zh/index.html" target="_blank" rel="noopener">ECharts 官方示例</a></span>
+    </div>
+  </div>
+
+  <script>
+    const barChart = echarts.init(document.getElementById('barChart'));
+    const pieChart = echarts.init(document.getElementById('pieChart'));
+
+    /* ---------- 柱状图 ---------- */
+    const barOption = {
+      color: ['#38bdf8', '#a78bfa'],
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        backgroundColor: 'rgba(15, 23, 42, 0.88)',
+        borderWidth: 0,
+        textStyle: { color: '#e2e8f0', fontSize: 12 }
+      },
+      legend: {
+        top: 6,
+        right: 6,
+        itemWidth: 12,
+        itemHeight: 8,
+        textStyle: { color: '#64748b', fontSize: 11 }
+      },
+      grid: { left: 14, right: 16, top: 46, bottom: 10, containLabel: true },
+      xAxis: {
+        type: 'category',
+        data: ['1月', '2月', '3月', '4月', '5月', '6月'],
+        axisLine: { lineStyle: { color: '#cbd5e1' } },
+        axisTick: { show: false },
+        axisLabel: { color: '#64748b', fontSize: 11 }
+      },
+      yAxis: {
+        type: 'value',
+        name: '万元',
+        nameTextStyle: { color: '#94a3b8', fontSize: 10, padding: [0, 0, 0, 6] },
+        splitLine: { lineStyle: { color: '#e8effb', type: 'dashed' } },
+        axisLabel: { color: '#94a3b8', fontSize: 10 }
+      },
+      series: [
+        {
+          name: '2025 年',
+          type: 'bar',
+          barWidth: 16,
+          itemStyle: {
+            borderRadius: [6, 6, 0, 0],
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: '#38bdf8' },
+              { offset: 1, color: '#0ea5e9' }
+            ])
+          },
+          data: [168, 192, 214, 186, 238, 276],
+          emphasis: { itemStyle: { shadowBlur: 12, shadowColor: 'rgba(56,189,248,.45)' } }
+        },
+        {
+          name: '2026 年',
+          type: 'bar',
+          barWidth: 16,
+          itemStyle: {
+            borderRadius: [6, 6, 0, 0],
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: '#c4b5fd' },
+              { offset: 1, color: '#8b5cf6' }
+            ])
+          },
+          data: [196, 215, 248, 226, 268, 312],
+          emphasis: { itemStyle: { shadowBlur: 12, shadowColor: 'rgba(139,92,246,.45)' } }
+        }
+      ]
+    };
+
+    /* ---------- 饼图（环形） ---------- */
+    const pieOption = {
+      color: ['#38bdf8', '#a78bfa', '#34d399', '#fbbf24', '#f472b6'],
+      tooltip: {
+        trigger: 'item',
+        formatter: '{b}：{c} 万元（{d}%）',
+        backgroundColor: 'rgba(15, 23, 42, 0.88)',
+        borderWidth: 0,
+        textStyle: { color: '#e2e8f0', fontSize: 12 }
+      },
+      legend: {
+        bottom: 2,
+        left: 'center',
+        itemWidth: 10,
+        itemHeight: 10,
+        itemGap: 14,
+        textStyle: { color: '#64748b', fontSize: 11 }
+      },
+      series: [
+        {
+          name: '品类销售占比',
+          type: 'pie',
+          radius: ['42%', '66%'],
+          center: ['50%', '46%'],
+          avoidLabelOverlap: true,
+          itemStyle: {
+            borderColor: '#ffffff',
+            borderWidth: 3,
+            borderRadius: 6
+          },
+          label: {
+            show: true,
+            formatter: '{d}%',
+            color: '#475569',
+            fontSize: 11
+          },
+          labelLine: {
+            length: 12,
+            length2: 10,
+            lineStyle: { color: '#cbd5e1' }
+          },
+          emphasis: {
+            scaleSize: 8,
+            label: { fontSize: 13, fontWeight: 'bold', color: '#0f172a' },
+            itemStyle: { shadowBlur: 16, shadowColor: 'rgba(56,189,248,.35)' }
+          },
+          data: [
+            { value: 420, name: '数码家电' },
+            { value: 310, name: '服饰鞋包' },
+            { value: 260, name: '美妆个护' },
+            { value: 190, name: '食品生鲜' },
+            { value: 150, name: '家居日用' }
+          ]
+        }
+      ]
+    };
+
+    barChart.setOption(barOption);
+    pieChart.setOption(pieOption);
+
+    /* ---------- 自适应 ---------- */
+    window.addEventListener('resize', () => {
+      barChart.resize();
+      pieChart.resize();
+    });
+  </script>
+</body>
+</html>

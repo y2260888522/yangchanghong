@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>18-5 Mermaid 智能客服流程图与 ER 图</title>
+  <script src="./cdn/mermaid.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background:
+        radial-gradient(circle at 10% 5%, rgba(56, 189, 248, 0.16), transparent 42%),
+        radial-gradient(circle at 92% 95%, rgba(167, 139, 250, 0.16), transparent 45%),
+        linear-gradient(160deg, #f4f8ff 0%, #eef2fb 100%);
+      min-height: 100vh;
+      padding: 34px 18px;
+    }
+    .page {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(30, 64, 175, 0.14), 0 2px 8px rgba(15, 23, 42, 0.05);
+      padding: 30px;
+    }
+    .page-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #e8effb;
+    }
+    .page-head h1 { font-size: 25px; color: #0f172a; letter-spacing: 1px; }
+    .page-head p { margin-top: 7px; font-size: 12.5px; color: #64748b; letter-spacing: 1.4px; }
+    .tag {
+      flex: none;
+      font-size: 12px;
+      color: #0369a1;
+      padding: 7px 15px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      white-space: nowrap;
+    }
+    .section {
+      background: linear-gradient(180deg, #fbfdff 0%, #f8fbff 100%);
+      border: 1px solid #e3ecf9;
+      border-radius: 16px;
+      padding: 18px 18px 10px;
+      margin-bottom: 22px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.06);
+    }
+    .section:last-child { margin-bottom: 0; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0 4px 12px;
+    }
+    .section-title i {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.16);
+    }
+    .section-title span { font-size: 10.5px; font-weight: 400; color: #94a3b8; letter-spacing: 1px; }
+    .diagram {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 12px 6px 18px;
+      text-align: center;
+      background:
+        linear-gradient(rgba(56, 189, 248, 0.03), rgba(56, 189, 248, 0.03)),
+        repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(148, 163, 184, 0.08) 31px, rgba(148, 163, 184, 0.08) 32px),
+        repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(148, 163, 184, 0.08) 31px, rgba(148, 163, 184, 0.08) 32px);
+      border-radius: 12px;
+      border: 1px dashed #dbe7f7;
+    }
+    .diagram svg { max-width: 100%; height: auto; }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid #e8effb;
+      font-size: 11.5px;
+      color: #94a3b8;
+    }
+    .error {
+      color: #dc2626;
+      font-size: 13px;
+      padding: 12px;
+    }
+    @media (max-width: 720px) {
+      .page { padding: 20px 14px; }
+      .page-head { flex-direction: column; align-items: flex-start; }
+      .section { padding: 14px 10px 6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <h1>Mermaid 智能客服系统图</h1>
+        <p>FLOWCHART &amp; ER DIAGRAM · 本地 mermaid.min.js 渲染</p>
+      </div>
+      <div class="tag">18-5 · Mermaid</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><i></i>智能客服业务流程 <span>FLOWCHART</span></div>
+      <div class="diagram">
+        <pre class="mermaid">
+flowchart TD
+    A(["用户发起咨询"]) --> B{"渠道判断"}
+    B -->|"网页 / App"| C["创建会话"]
+    B -->|"微信 / 电话"| C
+    C --> D["意图识别 NLU"]
+    D --> E["实体抽取与上下文补全"]
+    E --> F{"知识库是否命中"}
+    F -->|"命中"| G["向量检索 + 知识图谱查询"]
+    F -->|"未命中"| H["转人工坐席"]
+    G --> I["大模型生成回复 RAG"]
+    I --> J{"置信度是否达标"}
+    J -->|"达标"| K["返回答案并记录会话"]
+    J -->|"不达标"| H
+    H --> L["人工处理并沉淀知识"]
+    L --> M["知识库更新 / 标注"]
+    K --> N["会话归档与数据分析"]
+    M --> N
+        </pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><i style="background:#a78bfa;box-shadow:0 0 0 4px rgba(167,139,250,.16)"></i>智能客服数据模型 <span>ER DIAGRAM</span></div>
+      <div class="diagram">
+        <pre class="mermaid">
+erDiagram
+    USER ||--o{ SESSION : "发起"
+    SESSION ||--o{ MESSAGE : "包含"
+    SESSION ||--o| TICKET : "转人工"
+    AGENT ||--o{ TICKET : "处理"
+    KNOWLEDGE ||--o{ MESSAGE : "召回"
+
+    USER {
+        int id PK "用户ID"
+        string nickname "昵称"
+        string phone "手机号"
+        string channel "来源渠道"
+        datetime created_at "注册时间"
+    }
+
+    SESSION {
+        int id PK "会话ID"
+        int user_id FK "用户ID"
+        string channel "接入渠道"
+        string status "会话状态"
+        datetime started_at "开始时间"
+        datetime ended_at "结束时间"
+    }
+
+    MESSAGE {
+        int id PK "消息ID"
+        int session_id FK "会话ID"
+        string role "user / assistant / agent"
+        text content "消息内容"
+        string intent "识别意图"
+        datetime created_at "发送时间"
+    }
+
+    KNOWLEDGE {
+        int id PK "知识ID"
+        string title "标题"
+        string category "分类"
+        text content "知识内容"
+        int hit_count "召回次数"
+        datetime updated_at "更新时间"
+    }
+
+    TICKET {
+        int id PK "工单ID"
+        int session_id FK "会话ID"
+        int agent_id FK "坐席ID"
+        string status "处理状态"
+        string priority "优先级"
+        datetime created_at "创建时间"
+    }
+
+    AGENT {
+        int id PK "坐席ID"
+        string name "姓名"
+        string team "所属团队"
+        boolean online "在线状态"
+    }
+        </pre>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>流程图覆盖接入、理解、检索、生成、转人工与知识沉淀全链路。</span>
+      <span>ER 图包含用户、会话、消息、知识、工单、坐席六类核心实体。</span>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'loose',
+        theme: 'base',
+        fontFamily: '"Microsoft YaHei", Arial, sans-serif',
+        flowchart: { curve: 'basis', useMaxWidth: true, htmlLabels: true },
+        themeVariables: {
+          primaryColor: '#e0f2fe',
+          primaryBorderColor: '#38bdf8',
+          primaryTextColor: '#0f172a',
+          lineColor: '#94a3b8',
+          secondaryColor: '#ede9fe',
+          tertiaryColor: '#f8fafc',
+          background: '#ffffff',
+          mainBkg: '#ffffff',
+          nodeBorder: '#38bdf8',
+          clusterBkg: '#f8fbff',
+          fontSize: '14px'
+        }
+      });
+
+      try {
+        mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+      } catch (err) {
+        document.querySelectorAll('.diagram').forEach(function (box) {
+          box.innerHTML = '<div class="error">图表渲染失败：' + err.message + '</div>';
+        });
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

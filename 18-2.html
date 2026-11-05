@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>18-2 Canvas 电商全站系统架构图</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(56, 189, 248, 0.14), transparent 45%),
+        radial-gradient(circle at 90% 100%, rgba(167, 139, 250, 0.16), transparent 48%),
+        #060b16;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 16px;
+    }
+    .canvas-wrap {
+      width: 100%;
+      max-width: 1200px;
+      background: #0a1020;
+      border: 1px solid rgba(125, 165, 255, 0.18);
+      border-radius: 20px;
+      box-shadow: 0 26px 70px rgba(2, 8, 23, 0.75), 0 0 40px rgba(56, 189, 248, 0.08);
+      padding: 10px;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      border-radius: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-wrap">
+    <canvas id="arch"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('arch');
+    const ctx = canvas.getContext('2d');
+
+    const DW = 1200;
+    const DH = 780;
+
+    let cssW = DW;
+    let cssH = DH;
+    let dpr = 1;
+
+    /* ---------------- 架构数据 ---------------- */
+    const LAYERS = [
+      {
+        no: '01', name: '用户层', en: 'USER LAYER', color: '#38bdf8', y: 105, h: 96,
+        items: [
+          ['PC 商城', 'Web Browser'],
+          ['移动 App', 'iOS / Android'],
+          ['微信小程序', 'Mini Program'],
+          ['H5 商城', 'Mobile Web']
+        ]
+      },
+      {
+        no: '02', name: '接入层', en: 'ACCESS LAYER', color: '#818cf8', y: 225, h: 96,
+        items: [
+          ['CDN 加速', 'Content Delivery'],
+          ['Nginx 负载', 'Load Balance'],
+          ['API 网关', 'API Gateway'],
+          ['安全防护', 'WAF / Anti-DDoS']
+        ]
+      },
+      {
+        no: '03', name: '业务层', en: 'BUSINESS LAYER', color: '#34d399', y: 345, h: 106,
+        items: [
+          ['商品服务', 'Product'],
+          ['订单服务', 'Order'],
+          ['支付服务', 'Payment'],
+          ['用户服务', 'User'],
+          ['库存服务', 'Inventory'],
+          ['营销服务', 'Marketing']
+        ]
+      },
+      {
+        no: '04', name: '数据层', en: 'DATA LAYER', color: '#fbbf24', y: 475, h: 106,
+        items: [
+          ['MySQL 主从', 'Relational DB'],
+          ['Redis 缓存', 'Cache'],
+          ['Kafka 队列', 'Message Queue'],
+          ['Elasticsearch', 'Search Engine'],
+          ['对象存储', 'OSS']
+        ]
+      },
+      {
+        no: '05', name: '支撑层', en: 'SUPPORT LAYER', color: '#c084fc', y: 605, h: 96,
+        items: [
+          ['监控告警', 'Prometheus'],
+          ['日志中心', 'ELK Stack'],
+          ['配置中心', 'Config'],
+          ['运维平台', 'DevOps']
+        ]
+      }
+    ];
+
+    /* ---------------- 绘制工具 ---------------- */
+    function roundRect(x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function hexAlpha(hex, alpha) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    /* ---------------- 背景 ---------------- */
+    function drawBackground() {
+      const bg = ctx.createLinearGradient(0, 0, DW, DH);
+      bg.addColorStop(0, '#0a1222');
+      bg.addColorStop(0.5, '#081020');
+      bg.addColorStop(1, '#0b0f1e');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, DW, DH);
+
+      // 网格
+      ctx.strokeStyle = 'rgba(125, 165, 255, 0.06)';
+      ctx.lineWidth = 1;
+      for (let x = 40; x < DW; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, DH); ctx.stroke();
+      }
+      for (let y = 40; y < DH; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(DW, y); ctx.stroke();
+      }
+
+      // 顶部光晕
+      const glow = ctx.createLinearGradient(0, 0, 0, 220);
+      glow.addColorStop(0, 'rgba(56, 189, 248, 0.12)');
+      glow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, DW, 220);
+
+      // 顶部彩条
+      const bar = ctx.createLinearGradient(0, 0, DW, 0);
+      bar.addColorStop(0, 'rgba(56, 189, 248, 0.85)');
+      bar.addColorStop(0.45, 'rgba(129, 140, 248, 0.85)');
+      bar.addColorStop(1, 'rgba(192, 132, 252, 0.85)');
+      ctx.fillStyle = bar;
+      ctx.fillRect(0, 0, DW, 3);
+    }
+
+    /* ---------------- 标题 ---------------- */
+    function drawHeader() {
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      ctx.save();
+      ctx.shadowColor = 'rgba(56, 189, 248, 0.45)';
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '700 34px "Microsoft YaHei", Arial, sans-serif';
+      ctx.fillText('电商全站系统架构图', DW / 2, 46);
+      ctx.restore();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '400 13px "Microsoft YaHei", Arial, sans-serif';
+      ctx.letterSpacing = '1px';
+      ctx.fillText('基于 HTML5 CANVAS 绘制的分层系统架构 · E-COMMERCE FULL-SITE ARCHITECTURE', DW / 2, 76);
+      ctx.letterSpacing = '0px';
+
+      // 右上角徽标
+      const label = '全站系统 · 电商';
+      ctx.font = '500 12px "Microsoft YaHei", Arial, sans-serif';
+      ctx.letterSpacing = '0px';
+      const w = ctx.measureText(label).width + 28;
+      roundRect(DW - 56 - w, 30, w, 30, 15);
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.12)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.fillStyle = '#7dd3fc';
+      ctx.fillText(label, DW - 56 - w / 2, 46);
+    }
+
+    /* ---------------- 分层 ---------------- */
+    function drawLayer(layer) {
+      // 层背景
+      roundRect(44, layer.y, 1112, layer.h, 14);
+      const bandGrad = ctx.createLinearGradient(44, 0, 1156, 0);
+      bandGrad.addColorStop(0, hexAlpha(layer.color, 0.12));
+      bandGrad.addColorStop(0.55, hexAlpha(layer.color, 0.055));
+      bandGrad.addColorStop(1, hexAlpha(layer.color, 0.02));
+      ctx.fillStyle = bandGrad;
+      ctx.fill();
+      ctx.strokeStyle = hexAlpha(layer.color, 0.32);
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // 左侧层名胶囊
+      roundRect(60, layer.y + 20, 92, layer.h - 40, 10);
+      ctx.fillStyle = 'rgba(8, 15, 29, 0.75)';
+      ctx.fill();
+      ctx.strokeStyle = hexAlpha(layer.color, 0.6);
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = layer.color;
+      ctx.font = '700 15px "Microsoft YaHei", Arial, sans-serif';
+      ctx.fillText(layer.name, 106, layer.y + layer.h / 2 - 6);
+
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.8)';
+      ctx.font = '500 8.5px Arial, sans-serif';
+      ctx.fillText(layer.en, 106, layer.y + layer.h / 2 + 12);
+
+      // 层序号
+      ctx.textAlign = 'right';
+      ctx.fillStyle = hexAlpha(layer.color, 0.55);
+      ctx.font = '700 11px Arial, sans-serif';
+      ctx.fillText(layer.no, 1140, layer.y + layer.h - 9);
+
+      // 组件卡片
+      const areaX = 176;
+      const areaW = 958;
+      const gap = layer.items.length > 5 ? 12 : 16;
+      const boxW = (areaW - gap * (layer.items.length - 1)) / layer.items.length;
+      const boxH = 56;
+      const boxY = layer.y + (layer.h - boxH) / 2;
+
+      layer.items.forEach(([name, sub], i) => {
+        const x = areaX + i * (boxW + gap);
+
+        // 外发光
+        ctx.save();
+        ctx.shadowColor = hexAlpha(layer.color, 0.28);
+        ctx.shadowBlur = 14;
+        ctx.shadowOffsetY = 3;
+        roundRect(x, boxY, boxW, boxH, 9);
+        ctx.fillStyle = '#0d1728';
+        ctx.fill();
+        ctx.restore();
+
+        // 卡片主体渐变
+        roundRect(x, boxY, boxW, boxH, 9);
+        const cardGrad = ctx.createLinearGradient(x, boxY, x, boxY + boxH);
+        cardGrad.addColorStop(0, 'rgba(255, 255, 255, 0.075)');
+        cardGrad.addColorStop(1, 'rgba(255, 255, 255, 0.018)');
+        ctx.fillStyle = cardGrad;
+        ctx.fill();
+        ctx.strokeStyle = hexAlpha(layer.color, 0.45);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // 顶部彩条
+        ctx.fillStyle = hexAlpha(layer.color, 0.95);
+        roundRect(x + 1, boxY + 1, boxW - 2, 3, 2);
+        ctx.fill();
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = '600 14.5px "Microsoft YaHei", Arial, sans-serif';
+        ctx.fillText(name, x + boxW / 2, boxY + 22);
+
+        ctx.fillStyle = '#8ba3c7';
+        ctx.font = '400 10px Arial, sans-serif';
+        ctx.fillText(sub, x + boxW / 2, boxY + 40);
+      });
+    }
+
+    /* ---------------- 层间连接 ---------------- */
+    function drawConnectors(time) {
+      const cx = DW / 2;
+      for (let i = 0; i < LAYERS.length - 1; i++) {
+        const fromY = LAYERS[i].y + LAYERS[i].h + 1;
+        const toY = LAYERS[i + 1].y - 1;
+
+        // 发光连线
+        ctx.save();
+        ctx.shadowColor = 'rgba(56, 189, 248, 0.6)';
+        ctx.shadowBlur = 8;
+        ctx.strokeStyle = 'rgba(125, 211, 252, 0.55)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx, fromY);
+        ctx.lineTo(cx, toY);
+        ctx.stroke();
+        ctx.restore();
+
+        // 箭头
+        ctx.fillStyle = 'rgba(125, 211, 252, 0.85)';
+        ctx.beginPath();
+        ctx.moveTo(cx, toY - 1);
+        ctx.lineTo(cx - 5, toY - 10);
+        ctx.lineTo(cx + 5, toY - 10);
+        ctx.closePath();
+        ctx.fill();
+
+        // 流动光点
+        const span = toY - fromY;
+        const cycle = (time * 0.0015 + i * 0.32) % 1;
+        const dotY = fromY + span * cycle;
+
+        ctx.beginPath();
+        ctx.arc(cx, dotY, 7, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.16)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(cx, dotY, 2.6, 0, Math.PI * 2);
+        ctx.fillStyle = '#7dd3fc';
+        ctx.fill();
+      }
+    }
+
+    /* ---------------- 底部说明 / 图例 ---------------- */
+    function drawFooter() {
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+
+      // 图例：实线
+      const y = 742;
+      ctx.strokeStyle = 'rgba(125, 211, 252, 0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(60, y);
+      ctx.lineTo(92, y);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(125, 211, 252, 0.85)';
+      ctx.beginPath();
+      ctx.moveTo(92, y);
+      ctx.lineTo(86, y - 3.5);
+      ctx.lineTo(86, y + 3.5);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '400 11.5px "Microsoft YaHei", Arial, sans-serif';
+      ctx.fillText('请求 / 数据流向', 100, y);
+
+      ctx.fillStyle = 'rgba(100, 116, 139, 0.9)';
+      ctx.font = '400 11px "Microsoft YaHei", Arial, sans-serif';
+      ctx.fillText('绘制方式：Canvas 2D  ·  用户层 → 接入层 → 业务层 → 数据层  ·  支撑层提供全局能力', 248, y);
+
+      ctx.textAlign = 'right';
+      ctx.fillStyle = 'rgba(125, 211, 252, 0.55)';
+      ctx.fillText('18-2 · 全站系统架构', 1140, y);
+    }
+
+    /* ---------------- 渲染 ---------------- */
+    function render(time) {
+      ctx.setTransform(dpr * (cssW / DW), 0, 0, dpr * (cssW / DW), 0, 0);
+
+      drawBackground();
+      drawHeader();
+      LAYERS.forEach(layer => drawLayer(layer));
+      drawConnectors(time);
+      drawFooter();
+
+      requestAnimationFrame(render);
+    }
+
+    /* ---------------- 自适应 ---------------- */
+    function resize() {
+      const wrap = canvas.parentElement;
+      const maxW = 1200;
+      cssW = Math.min(maxW, wrap.clientWidth - 20);
+      cssH = cssW * (DH / DW);
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.round(cssW * dpr);
+      canvas.height = Math.round(cssH * dpr);
+      canvas.style.height = cssH + 'px';
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    requestAnimationFrame(render);
+  </script>
+</body>
+</html>
